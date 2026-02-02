@@ -408,8 +408,11 @@ function showReport(type) {
         
         let income = 0, expenses = 0;
         todayTransactions.forEach(t => {
-            if (t.amount > 0) income += t.amount;
-            else expenses += Math.abs(t.amount);
+            const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+            const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+            
+            if (isIncome) income += Math.abs(t.amount);
+            else if (isExpense) expenses += Math.abs(t.amount);
         });
         
         html = `
@@ -429,8 +432,11 @@ function showReport(type) {
         
         let income = 0, expenses = 0;
         weekTransactions.forEach(t => {
-            if (t.amount > 0) income += t.amount;
-            else expenses += Math.abs(t.amount);
+            const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+            const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+            
+            if (isIncome) income += Math.abs(t.amount);
+            else if (isExpense) expenses += Math.abs(t.amount);
         });
         
         html = `
@@ -453,9 +459,12 @@ function showReport(type) {
         const categoryBreakdown = {};
         
         monthTransactions.forEach(t => {
-            if (t.amount > 0) {
-                income += t.amount;
-            } else {
+            const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+            const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+            
+            if (isIncome) {
+                income += Math.abs(t.amount);
+            } else if (isExpense) {
                 expenses += Math.abs(t.amount);
                 categoryBreakdown[t.category] = (categoryBreakdown[t.category] || 0) + Math.abs(t.amount);
             }
@@ -498,8 +507,11 @@ function showReport(type) {
         const calcStats = (trans) => {
             let income = 0, expenses = 0;
             trans.forEach(t => {
-                if (t.amount > 0) income += t.amount;
-                else expenses += Math.abs(t.amount);
+                const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+                const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+                
+                if (isIncome) income += Math.abs(t.amount);
+                else if (isExpense) expenses += Math.abs(t.amount);
             });
             return { income, expenses, net: income - expenses };
         };
