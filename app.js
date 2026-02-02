@@ -101,9 +101,30 @@ function renderDashboard() {
 // Render balance cards
 function renderBalances() {
     let total = 0;
-    Object.entries(balances).forEach(([bank, amount]) => {
+    Object.entries(balances).forEach(([bank, data]) => {
+        // Handle both formats: simple number or object with balance property
+        const amount = typeof data === 'number' ? data : (data.balance || 0);
         total += amount;
-        const el = document.getElementById(`balance-${bank}`);
+        
+        // Try to find element by bank name (both Arabic and English IDs)
+        const bankKey = bank.toLowerCase().replace(/\s+/g, '-');
+        let el = document.getElementById(`balance-${bankKey}`);
+        
+        // Fallback: try mapping Arabic names to English IDs
+        if (!el) {
+            const reverseMap = {
+                'السعودي الفرنسي': 'banque-saudi',
+                'الراجحي': 'alrajhi',
+                'برق': 'barq',
+                'تيكمو': 'tikmo',
+                'STC Bank': 'stc'
+            };
+            const mappedKey = reverseMap[bank];
+            if (mappedKey) {
+                el = document.getElementById(`balance-${mappedKey}`);
+            }
+        }
+        
         if (el) {
             el.textContent = formatCurrency(amount);
         }
