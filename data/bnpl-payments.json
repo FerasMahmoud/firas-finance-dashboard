@@ -1,0 +1,51 @@
+{
+  "tamara": [
+    {
+      "merchant": "Amazon",
+      "amount": 193.43,
+      "payment_number": 4,
+      "total_payments": 4,
+      "due_date": "2026-02-05",
+      "status": "pending",
+      "order_id": "AMZ-001"
+    },
+    {
+      "merchant": "Amazon",
+      "amount": 846.91,
+      "payment_number": 3,
+      "total_payments": 4,
+      "due_date": "2026-02-24",
+      "status": "pending",
+      "order_id": "AMZ-002"
+    }
+  ],
+  "tabby": [
+    {
+      "merchant": "Amazon.sa",
+      "amount": 99.75,
+      "payment_number": 2,
+      "total_payments": 4,
+      "due_date": "2026-02-07",
+      "status": "pending",
+      "order_id": "AMZ-TAB-001"
+    },
+    {
+      "merchant": "Amazon.sa",
+      "amount": 212.35,
+      "payment_number": 2,
+      "total_payments": 4,
+      "due_date": "2026-02-17",
+      "status": "pending",
+      "order_id": "AMZ-TAB-002"
+    },
+    {
+      "merchant": "Fitness Time",
+      "amount": 303.20,
+      "payment_number": 3,
+      "total_payments": 4,
+      "due_date": "2026-02-23",
+      "status": "pending",
+      "order_id": "FIT-001"
+    }
+  ]
+}

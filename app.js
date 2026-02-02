@@ -8,6 +8,7 @@ let charts = {};
 let incomePeriod = 'month'; // daily, weekly, month
 let chartType = 'doughnut'; // doughnut, bar, pie, line
 let currentPeriod = 'all'; // Track main period filter
+let bnplPayments = { tamara: [], tabby: [] };
 
 // Bank name mappings
 const bankNames = {
@@ -82,9 +83,10 @@ function showErrorNotification(message) {
 // Load data from JSON files
 async function loadData() {
     try {
-        const [transactionsRes, balancesRes] = await Promise.all([
+        const [transactionsRes, balancesRes, bnplRes] = await Promise.all([
             fetch('./data/transactions.json'),
-            fetch('./data/balances.json')
+            fetch('./data/balances.json'),
+            fetch('./data/bnpl-payments.json').catch(() => null)
         ]);
         
         if (!transactionsRes.ok || !balancesRes.ok) {
@@ -94,6 +96,12 @@ async function loadData() {
         transactions = await transactionsRes.json();
         balances = await balancesRes.json();
         filteredTransactions = [...transactions];
+        
+        // Load BNPL payments if available
+        if (bnplRes && bnplRes.ok) {
+            bnplPayments = await bnplRes.json();
+            console.log(`✅ Loaded ${bnplPayments.tamara.length + bnplPayments.tabby.length} BNPL payments`);
+        }
         
         console.log(`✅ Loaded ${transactions.length} transactions`);
         console.log(`📂 Sample transaction:`, transactions[0]);
@@ -161,9 +169,63 @@ function getSampleBalances() {
 // Render main dashboard
 function renderDashboard() {
     renderBalances();
+    renderBNPL();
     renderIncomeExpenses();
     renderTransactionsList();
     renderCharts();
+}
+
+// Render BNPL payments
+function renderBNPL() {
+    const container = document.getElementById('bnplList');
+    const totalEl = document.getElementById('bnplTotal');
+    
+    if (!container || !totalEl) return;
+    
+    // Combine and sort by due date
+    const allPayments = [
+        ...bnplPayments.tamara.map(p => ({ ...p, provider: 'تمارا', color: 'bg-pink-100 dark:bg-pink-900' })),
+        ...bnplPayments.tabby.map(p => ({ ...p, provider: 'تابي', color: 'bg-yellow-100 dark:bg-yellow-900' }))
+    ].filter(p => p.status === 'pending')
+    .sort((a, b) => new Date(a.due_date) - new Date(b.due_date));
+    
+    // Calculate total
+    const total = allPayments.reduce((sum, p) => sum + p.amount, 0);
+    totalEl.textContent = formatCurrency(total);
+    
+    if (allPayments.length === 0) {
+        container.innerHTML = '<p class="text-center opacity-75">✨ لا توجد دفعات قادمة</p>';
+        return;
+    }
+    
+    // Render payments
+    container.innerHTML = allPayments.map(p => {
+        const daysLeft = Math.ceil((new Date(p.due_date) - new Date()) / (1000 * 60 * 60 * 24));
+        const isUrgent = daysLeft <= 3;
+        const urgentClass = isUrgent ? 'border-2 border-red-400 animate-pulse' : '';
+        
+        return `
+        <div class="bg-white dark:bg-gray-800 rounded-lg p-3 ${urgentClass}">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3 flex-1">
+                    <div class="w-10 h-10 rounded-full ${p.color} flex items-center justify-center font-bold text-sm">
+                        ${p.provider}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-gray-900 dark:text-gray-100 truncate">${p.merchant}</p>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">
+                            دفعة ${p.payment_number}/${p.total_payments} • ${daysLeft} ${daysLeft === 1 ? 'يوم' : 'أيام'}
+                        </p>
+                    </div>
+                </div>
+                <div class="text-left">
+                    <p class="font-bold text-lg text-gray-900 dark:text-gray-100">${formatCurrency(p.amount)}</p>
+                    <p class="text-xs text-gray-500">${new Date(p.due_date).toLocaleDateString('ar-SA')}</p>
+                </div>
+            </div>
+        </div>
+    `;
+    }).join('');
 }
 
 // Render balance cards
