@@ -79,23 +79,25 @@ function showErrorNotification(message) {
 // Load data from API
 async function loadData() {
     try {
-        // Fetch from SQLite API instead of JSON files
-        const [transactionsRes, balancesRes] = await Promise.all([
-            fetch(`${API_URL}/api/transactions`),
-            fetch(`${API_URL}/api/banks`)
+        // ✅ Fetch from static JSON files on GitHub Pages
+        const [transactionsRes, banksRes] = await Promise.all([
+            fetch('./data/transactions.json'),
+            fetch('./data/banks.json')
         ]);
         
         // ✅ CHECK HTTP STATUS
         if (!transactionsRes.ok) {
             throw new Error(`HTTP ${transactionsRes.status}: ${transactionsRes.statusText}`);
         }
-        if (!balancesRes.ok) {
-            throw new Error(`HTTP ${balancesRes.status}: ${balancesRes.statusText}`);
+        if (!banksRes.ok) {
+            throw new Error(`HTTP ${banksRes.status}: ${banksRes.statusText}`);
         }
         
         // Parse responses
-        transactions = await transactionsRes.json();
-        const banksArray = await balancesRes.json();
+        const transactionsData = await transactionsRes.json();
+        transactions = transactionsData.transactions || transactionsData; // Handle both formats
+        
+        const banksArray = await banksRes.json();
         
         // Convert banks array to balances object (for compatibility)
         balances = {};
@@ -110,17 +112,17 @@ async function loadData() {
         
         filteredTransactions = [...transactions];
         
-        console.log(`✅ Loaded ${transactions.length} transactions from API`);
+        console.log(`✅ Loaded ${transactions.length} transactions from static files`);
     } catch (error) {
-        console.error('❌ API Error:', error);
+        console.error('❌ Load Error:', error);
         
-        // Fallback to sample data if API fails
+        // Fallback to sample data if loading fails
         transactions = getSampleTransactions();
         balances = getSampleBalances();
         filteredTransactions = [...transactions];
         
         // Show user-friendly error message
-        showErrorNotification('تعذر الاتصال بالخادم. يتم عرض بيانات تجريبية.');
+        showErrorNotification('تعذر تحميل البيانات. يتم عرض بيانات تجريبية.');
     }
 }
 
