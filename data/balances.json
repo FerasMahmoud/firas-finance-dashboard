@@ -1,7 +1,64 @@
 {
-  "banque-saudi": 15000.00,
-  "alrajhi": 8500.00,
-  "barq": 2000.00,
-  "tikmo": 1500.00,
-  "stc": 3000.00
+  "السعودي الفرنسي": {
+    "balance": 27908.99,
+    "lastUpdated": "2026-02-01T19:45:00.000Z",
+    "account": "0154",
+    "cards": {
+      "1304": {
+        "name": "Alfursan Visa Infinite",
+        "balance": -151.55
+      }
+    }
+  },
+  "الراجحي": {
+    "balance": 2716.80,
+    "lastUpdated": "2026-02-01T19:45:00.000Z",
+    "accounts": {
+      "7458": {
+        "name": "حساب جاري",
+        "balance": 2394.22,
+        "type": "mada"
+      },
+      "9776": {
+        "name": "حساب جاري",
+        "balance": 259.40
+      },
+      "6663": {
+        "name": "حساب جاري",
+        "balance": 62.29
+      }
+    },
+    "cards": {
+      "2954": {
+        "name": "Visa",
+        "balance": 1.00,
+        "currency": "USD"
+      },
+      "4360": {
+        "name": "بطاقة تسوق",
+        "balance": 80.05
+      }
+    }
+  },
+  "برق": {
+    "balance": 792.69,
+    "lastUpdated": "2026-02-02T05:24:00.000Z",
+    "account": "2094"
+  },
+  "تيكمو": {
+    "balance": 149.92,
+    "lastUpdated": "2026-02-02T05:25:35.000Z",
+    "account": "0246",
+    "cards": {
+      "5869": {
+        "name": "MasterCard",
+        "balance": null
+      }
+    }
+  },
+  "STC Bank": {
+    "balance": 204.03,
+    "lastUpdated": "2026-02-01T19:46:00.000Z",
+    "account": "Primary"
+  }
 }
