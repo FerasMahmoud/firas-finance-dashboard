@@ -473,12 +473,36 @@ function initFilters() {
     });
 }
 
+// Set period using buttons
+function setPeriod(period) {
+    // Update hidden select for compatibility
+    const periodSelect = document.getElementById('filterPeriod');
+    if (periodSelect) {
+        periodSelect.value = period;
+    }
+    
+    // Update button styles
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.classList.remove('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+        btn.classList.add('bg-gray-200', 'dark:bg-gray-700', 'hover:bg-gray-300', 'dark:hover:bg-gray-600');
+    });
+    
+    const activeBtn = document.getElementById(`btn-${period}`);
+    if (activeBtn) {
+        activeBtn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'hover:bg-gray-300', 'dark:hover:bg-gray-600');
+        activeBtn.classList.add('bg-blue-500', 'text-white', 'hover:bg-blue-600');
+    }
+    
+    // Apply filters
+    applyFilters();
+}
+
 // Apply filters
 function applyFilters() {
     const bank = document.getElementById('filterBank').value;
     const category = document.getElementById('filterCategory').value;
     const classification = document.getElementById('filterClassification').value;
-    const period = document.getElementById('filterPeriod').value;
+    const period = document.getElementById('filterPeriod')?.value || 'all';
     
     filteredTransactions = transactions.filter(t => {
         if (bank && t.bank !== bank) return false;
@@ -498,6 +522,8 @@ function applyFilters() {
                 if (date.getMonth() !== now.getMonth() || date.getFullYear() !== now.getFullYear()) {
                     return false;
                 }
+            } else if (period === 'year') {
+                if (date.getFullYear() !== now.getFullYear()) return false;
             }
         }
         
