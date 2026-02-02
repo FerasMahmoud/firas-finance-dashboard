@@ -1,5 +1,5 @@
 // Finance Dashboard App
-const API_URL = 'https://functional-primarily-gmbh-bali.trycloudflare.com';
+const API_URL = 'https://adjust-confidence-glen-proper.trycloudflare.com';
 
 let transactions = [];
 let balances = {};
