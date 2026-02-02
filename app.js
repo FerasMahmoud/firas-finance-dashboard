@@ -82,16 +82,19 @@ async function loadData() {
             fetch('data/balances.json')
         ]);
         
-        // Check if responses are successful
-        if (!transactionsRes.ok || !balancesRes.ok) {
-            throw new Error(`Failed to load data: transactions(${transactionsRes.status}), balances(${balancesRes.status})`);
+        // ✅ CHECK HTTP STATUS
+        if (!transactionsRes.ok) {
+            throw new Error(`HTTP ${transactionsRes.status}: ${transactionsRes.statusText}`);
+        }
+        if (!balancesRes.ok) {
+            throw new Error(`HTTP ${balancesRes.status}: ${balancesRes.statusText}`);
         }
         
         transactions = await transactionsRes.json();
         balances = await balancesRes.json();
         filteredTransactions = [...transactions];
     } catch (error) {
-        // Silent fallback to sample data if files don't exist
+        // Fallback to sample data if files don't exist
         transactions = getSampleTransactions();
         balances = getSampleBalances();
         filteredTransactions = [...transactions];
@@ -193,9 +196,9 @@ function renderIncomeExpenses() {
     let expenses = 0;
     
     monthlyTransactions.forEach(t => {
-        // Use transactionType if available, fallback to amount sign
-        const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
-        const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+        // ✅ Use transactionType only (all amounts are positive in data)
+        const isExpense = t.transactionType === 'صرف';
+        const isIncome = t.transactionType === 'دخل';
         
         if (isIncome) {
             income += Math.abs(t.amount);
@@ -224,8 +227,8 @@ function renderTransactionsList() {
         .slice(0, 10);
     
     container.innerHTML = last10.map(t => {
-        // Determine if income or expense based on transactionType
-        const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+        // ✅ Determine if income or expense based on transactionType only
+        const isIncome = t.transactionType === 'دخل';
         const icon = isIncome ? '📥' : '📤';
         const colorClass = isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
         const sign = isIncome ? '+' : '-';
@@ -336,6 +339,21 @@ function renderBankChart() {
     const ctx = document.getElementById('bankChart');
     if (charts.bank) charts.bank.destroy();
     
+    // Empty data check
+    if (Object.keys(bankData).length === 0) {
+        const canvas = ctx;
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.font = '16px Cairo, Tajawal, -apple-system, Arial, sans-serif';
+        context.fillStyle = document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#4B5563';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText('لا توجد بيانات', canvas.width / 2, canvas.height / 2);
+        return;
+    }
+    
+    const isDark = document.documentElement.classList.contains('dark');
+    
     charts.bank = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -353,24 +371,38 @@ function renderBankChart() {
                 y: {
                     beginAtZero: true,
                     ticks: {
-                        color: document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#4B5563'
+                        color: isDark ? '#9CA3AF' : '#4B5563'
                     }
                 },
                 x: {
                     ticks: {
-                        color: document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#4B5563'
+                        color: isDark ? '#9CA3AF' : '#4B5563',
+                        font: {
+                            family: 'Cairo, Tajawal, -apple-system, Arial, sans-serif'
+                        }
                     }
                 }
             },
             plugins: {
                 legend: {
+                    rtl: true,
                     labels: {
-                        color: document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#4B5563'
+                        textAlign: 'right',
+                        color: isDark ? '#9CA3AF' : '#4B5563',
+                        font: {
+                            family: 'Cairo, Tajawal, -apple-system, Arial, sans-serif'
+                        }
                     }
                 }
             }
         }
     });
+}
+
+// Dynamic color generator for charts
+function generateColors(count) {
+    const colors = ['#10B981', '#F59E0B', '#EF4444', '#3B82F6', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+    return Array(count).fill(0).map((_, i) => colors[i % colors.length]);
 }
 
 function renderClassificationChart() {
@@ -386,13 +418,29 @@ function renderClassificationChart() {
     const ctx = document.getElementById('classificationChart');
     if (charts.classification) charts.classification.destroy();
     
+    // Empty data check
+    if (Object.keys(classData).length === 0) {
+        const canvas = ctx;
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.font = '16px Cairo, Tajawal, -apple-system, Arial, sans-serif';
+        context.fillStyle = document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#4B5563';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText('لا توجد بيانات', canvas.width / 2, canvas.height / 2);
+        return;
+    }
+    
+    const isDark = document.documentElement.classList.contains('dark');
+    const dataCount = Object.keys(classData).length;
+    
     charts.classification = new Chart(ctx, {
         type: 'pie',
         data: {
             labels: Object.keys(classData),
             datasets: [{
                 data: Object.values(classData),
-                backgroundColor: ['#10B981', '#F59E0B', '#EF4444']
+                backgroundColor: generateColors(dataCount)
             }]
         },
         options: {
@@ -400,9 +448,14 @@ function renderClassificationChart() {
             maintainAspectRatio: true,
             plugins: {
                 legend: {
+                    rtl: true,
                     position: 'bottom',
                     labels: {
-                        color: document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#4B5563'
+                        textAlign: 'right',
+                        color: isDark ? '#9CA3AF' : '#4B5563',
+                        font: {
+                            family: 'Cairo, Tajawal, -apple-system, Arial, sans-serif'
+                        }
                     }
                 }
             }
