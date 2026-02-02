@@ -1,5 +1,5 @@
 // Finance Dashboard App
-const API_URL = 'https://regulations-air-libs-champagne.trycloudflare.com';
+const API_URL = 'https://composed-cruises-oxide-statutes.trycloudflare.com';
 
 let transactions = [];
 let balances = {};
