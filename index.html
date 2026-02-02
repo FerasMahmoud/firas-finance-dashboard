@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم المالية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@3.0.0/index.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        arabic: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        .rtl-flip {
+            direction: rtl;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">💰 لوحة التحكم المالية</h1>
+            <button id="themeToggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                <span class="dark:hidden">🌙</span>
+                <span class="hidden dark:inline">☀️</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-6">
+        
+        <!-- Balance Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <div class="md:col-span-3 lg:col-span-6 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 rounded-lg shadow-lg p-6 text-white">
+                <h2 class="text-lg opacity-90">الرصيد الإجمالي</h2>
+                <p id="totalBalance" class="text-4xl font-bold mt-2">0 ر.س</p>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                <h3 class="text-sm text-gray-600 dark:text-gray-400">السعودي الفرنسي</h3>
+                <p id="balance-banque-saudi" class="text-xl font-bold mt-1">0 ر.س</p>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                <h3 class="text-sm text-gray-600 dark:text-gray-400">الراجحي</h3>
+                <p id="balance-alrajhi" class="text-xl font-bold mt-1">0 ر.س</p>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                <h3 class="text-sm text-gray-600 dark:text-gray-400">برق</h3>
+                <p id="balance-barq" class="text-xl font-bold mt-1">0 ر.س</p>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                <h3 class="text-sm text-gray-600 dark:text-gray-400">تيكمو</h3>
+                <p id="balance-tikmo" class="text-xl font-bold mt-1">0 ر.س</p>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                <h3 class="text-sm text-gray-600 dark:text-gray-400">STC Bank</h3>
+                <p id="balance-stc" class="text-xl font-bold mt-1">0 ر.س</p>
+            </div>
+        </div>
+
+        <!-- Income vs Expenses -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-2">الدخل والمصروفات (الشهر الحالي)</h3>
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-green-600 dark:text-green-400">الدخل</span>
+                            <span id="monthlyIncome" class="font-bold text-green-600 dark:text-green-400">0 ر.س</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div id="incomeBar" class="bg-green-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-red-600 dark:text-red-400">المصروفات</span>
+                            <span id="monthlyExpenses" class="font-bold text-red-600 dark:text-red-400">0 ر.س</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div id="expensesBar" class="bg-red-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="pt-2 border-t dark:border-gray-700">
+                        <div class="flex justify-between items-center">
+                            <span class="font-semibold">الصافي</span>
+                            <span id="netAmount" class="font-bold text-xl">0 ر.س</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">توزيع المصروفات حسب الفئة</h3>
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
+            <h3 class="text-lg font-semibold mb-4">التصفية</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-2">البنك</label>
+                    <select id="filterBank" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                        <option value="">الكل</option>
+                        <option value="banque-saudi">السعودي الفرنسي</option>
+                        <option value="alrajhi">الراجحي</option>
+                        <option value="barq">برق</option>
+                        <option value="tikmo">تيكمو</option>
+                        <option value="stc">STC Bank</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">الفئة</label>
+                    <select id="filterCategory" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                        <option value="">الكل</option>
+                        <option value="طعام">طعام</option>
+                        <option value="تسوق">تسوق</option>
+                        <option value="تبرعات">تبرعات</option>
+                        <option value="خدمات تقنية">خدمات تقنية</option>
+                        <option value="تحويلات">تحويلات</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">التصنيف</label>
+                    <select id="filterClassification" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                        <option value="">الكل</option>
+                        <option value="شخصي">شخصي</option>
+                        <option value="عمل">عمل</option>
+                        <option value="عائلة">عائلة</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">الفترة</label>
+                    <select id="filterPeriod" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
+                        <option value="all">الكل</option>
+                        <option value="today">اليوم</option>
+                        <option value="week">هذا الأسبوع</option>
+                        <option value="month">هذا الشهر</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+            <h3 class="text-lg font-semibold mb-4">التقارير</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <button onclick="showReport('daily')" class="p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">
+                    ملخص يومي
+                </button>
+                <button onclick="showReport('weekly')" class="p-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition">
+                    ملخص أسبوعي
+                </button>
+                <button onclick="showReport('monthly')" class="p-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition">
+                    ملخص شهري
+                </button>
+                <button onclick="showReport('comparison')" class="p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition">
+                    مقارنة شهرية
+                </button>
+            </div>
+            <div id="reportContent" class="hidden">
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                    <h4 id="reportTitle" class="text-lg font-semibold mb-3"></h4>
+                    <div id="reportData"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">المصروفات حسب البنك</h3>
+                <canvas id="bankChart"></canvas>
+            </div>
+            
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4">المصروفات حسب التصنيف</h3>
+                <canvas id="classificationChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Last 10 Transactions -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 class="text-lg font-semibold mb-4">آخر 10 معاملات</h3>
+            <div class="overflow-x-auto">
+                <div id="transactionsList" class="space-y-2">
+                    <!-- Transactions will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

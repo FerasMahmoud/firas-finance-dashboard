@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "timestamp": "2026-02-02T10:30:00Z",
+    "bank": "banque-saudi",
+    "amount": -150.50,
+    "merchant": "مطعم النخيل",
+    "category": "طعام",
+    "classification": "شخصي",
+    "note": "غداء مع الأصدقاء",
+    "confirmed": true
+  },
+  {
+    "id": 2,
+    "timestamp": "2026-02-01T15:20:00Z",
+    "bank": "alrajhi",
+    "amount": -500.00,
+    "merchant": "كارفور",
+    "category": "تسوق",
+    "classification": "عائلة",
+    "note": "مشتريات شهرية",
+    "confirmed": true
+  },
+  {
+    "id": 3,
+    "timestamp": "2026-02-01T09:00:00Z",
+    "bank": "stc",
+    "amount": 5000.00,
+    "merchant": "شركة XYZ",
+    "category": "دخل",
+    "classification": "عمل",
+    "note": "راتب شهري",
+    "confirmed": true
+  },
+  {
+    "id": 4,
+    "timestamp": "2026-01-31T18:45:00Z",
+    "bank": "barq",
+    "amount": -85.00,
+    "merchant": "محطة وقود",
+    "category": "تسوق",
+    "classification": "شخصي",
+    "note": "تعبئة وقود",
+    "confirmed": true
+  },
+  {
+    "id": 5,
+    "timestamp": "2026-01-30T12:00:00Z",
+    "bank": "tikmo",
+    "amount": -200.00,
+    "merchant": "جمعية خيرية",
+    "category": "تبرعات",
+    "classification": "شخصي",
+    "note": "تبرع شهري",
+    "confirmed": true
+  },
+  {
+    "id": 6,
+    "timestamp": "2026-01-29T14:30:00Z",
+    "bank": "banque-saudi",
+    "amount": -99.00,
+    "merchant": "Netflix",
+    "category": "خدمات تقنية",
+    "classification": "شخصي",
+    "note": "اشتراك شهري",
+    "confirmed": true
+  },
+  {
+    "id": 7,
+    "timestamp": "2026-01-28T16:20:00Z",
+    "bank": "alrajhi",
+    "amount": -1500.00,
+    "merchant": "مدرسة الأبناء",
+    "category": "تحويلات",
+    "classification": "عائلة",
+    "note": "رسوم دراسية",
+    "confirmed": true
+  },
+  {
+    "id": 8,
+    "timestamp": "2026-01-27T11:00:00Z",
+    "bank": "stc",
+    "amount": -350.00,
+    "merchant": "مطعم البيك",
+    "category": "طعام",
+    "classification": "عائلة",
+    "note": "عشاء عائلي",
+    "confirmed": true
+  },
+  {
+    "id": 9,
+    "timestamp": "2026-01-26T13:15:00Z",
+    "bank": "barq",
+    "amount": -750.00,
+    "merchant": "Extra",
+    "category": "تسوق",
+    "classification": "عائلة",
+    "note": "إلكترونيات",
+    "confirmed": true
+  },
+  {
+    "id": 10,
+    "timestamp": "2026-01-25T10:00:00Z",
+    "bank": "tikmo",
+    "amount": -120.00,
+    "merchant": "مقهى ستاربكس",
+    "category": "طعام",
+    "classification": "شخصي",
+    "note": "قهوة الصباح",
+    "confirmed": true
+  },
+  {
+    "id": 11,
+    "timestamp": "2026-01-24T17:30:00Z",
+    "bank": "banque-saudi",
+    "amount": -2000.00,
+    "merchant": "شركة ABC",
+    "category": "تحويلات",
+    "classification": "عمل",
+    "note": "دفعة مقدمة لمشروع",
+    "confirmed": true
+  },
+  {
+    "id": 12,
+    "timestamp": "2026-01-23T09:45:00Z",
+    "bank": "alrajhi",
+    "amount": 1500.00,
+    "merchant": "عميل محمد",
+    "category": "دخل",
+    "classification": "عمل",
+    "note": "دفعة مشروع",
+    "confirmed": true
+  }
+]

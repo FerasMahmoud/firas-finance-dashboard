@@ -1,0 +1,86 @@
+╔═══════════════════════════════════════════════════════════════╗
+║           GITHUB PAGES DEPLOYMENT - QUICK START               ║
+╚═══════════════════════════════════════════════════════════════╝
+
+📍 LOCATION: /home/node/.openclaw/workspace/finance-dashboard/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🚀 FIRST TIME SETUP (5 minutes)
+
+1. Get GitHub Token:
+   → Visit: https://github.com/settings/tokens
+   → Click "Generate new token (classic)"
+   → Name: "Finance Dashboard Deployment"
+   → Check: ✅ repo + ✅ workflow
+   → Generate & copy token (starts with ghp_)
+
+2. Deploy Dashboard:
+   → cd finance-dashboard/
+   → node scripts/deploy-github.js
+   → Enter your GitHub username
+   → Paste your token
+   → Get live URL!
+
+3. Your Live URL:
+   → https://YOUR-USERNAME.github.io/firas-finance-dashboard/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔄 DAILY USAGE
+
+Update Dashboard:
+  node scripts/update-dashboard.js
+
+Add Transaction:
+  node scripts/add-transaction.js
+
+Check Status:
+  node scripts/github-status.js
+
+Auto-Update Mode:
+  node scripts/watch-dashboard.js
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📚 DOCUMENTATION
+
+Quick Start:      GITHUB_SETUP_COMPLETE.md
+Token Guide:      GITHUB_PAT_GUIDE.md
+Full Guide:       GITHUB_DEPLOYMENT.md
+Scripts Guide:    scripts/README.md
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+💡 WHAT YOU GET
+
+✅ One-command deployment
+✅ Permanent GitHub connection
+✅ Quick updates (10 seconds)
+✅ Auto-updates when files change
+✅ Live dashboard accessible anywhere
+✅ Free hosting forever
+✅ Mobile responsive
+✅ Secure (HTTPS)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🆘 TROUBLESHOOTING
+
+Token not found?
+  → Run: node scripts/deploy-github.js
+
+Changes not appearing?
+  → Wait 60 seconds
+  → Hard refresh: Ctrl+Shift+R
+
+Check status:
+  → Run: node scripts/github-status.js
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Ready to deploy? Run:
+  cd finance-dashboard/
+  node scripts/deploy-github.js
+
+╚═══════════════════════════════════════════════════════════════╝

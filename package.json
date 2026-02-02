@@ -1,0 +1,23 @@
+{
+  "name": "finance-dashboard",
+  "version": "1.0.0",
+  "description": "Personal finance dashboard with RTL support, dark mode, and beautiful charts",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "add": "node scripts/add-transaction.js",
+    "balance": "node scripts/update-balance.js"
+  },
+  "keywords": [
+    "finance",
+    "dashboard",
+    "arabic",
+    "rtl",
+    "charts",
+    "cloudflare-pages"
+  ],
+  "author": "Firas",
+  "license": "MIT",
+  "devDependencies": {},
+  "dependencies": {}
+}
