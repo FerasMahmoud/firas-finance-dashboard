@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "timestamp": "2026-02-01T19:29:00.000Z",
+    "bank": "السعودي الفرنسي",
+    "cardType": "Unknown",
+    "cardLast4": "8897",
+    "account": "0154",
+    "amount": 33.66,
+    "balance": null,
+    "transactionType": "صرف",
+    "merchant": "Keeta Mada",
+    "category": "طعام - مطاعم",
+    "classification": "شخصي",
+    "note": null,
+    "confirmed": false,
+    "rawSMS": "Online Purchase SAR 33.66 At Keeta Mada *8897 Account *0154 On 26-02-01 19:29",
+    "parsedAt": "2026-02-01T19:35:37.783Z"
+  }
+]

@@ -4786,23 +4786,5 @@
     "confirmed": false,
     "rawEmail": "Order 1116082334182031: delivery update",
     "parsedAt": "2026-02-02T03:51:50.674Z"
-  },
-  {
-    "id": 267,
-    "timestamp": "2026-02-02T07:46:00.000Z",
-    "bank": "برق",
-    "cardType": "VISA",
-    "cardLast4": "7664",
-    "account": "2094",
-    "amount": 31.85,
-    "balance": 760.84,
-    "transactionType": "صرف",
-    "merchant": "Amazon SA",
-    "category": "تسوق",
-    "classification": "شخصي",
-    "note": "Dr. Schar Gluten-Free Corn Flakes",
-    "confirmed": true,
-    "rawSMS": "Online Purchases: VISA card:**7664 Amount:31.85 SAR Balance:760.84 At:Amazon SA A/C:**2094 On:2026-02-02 07:46",
-    "parsedAt": "2026-02-02T04:48:27.093Z"
   }
 ]
