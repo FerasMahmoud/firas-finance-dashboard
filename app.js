@@ -228,6 +228,28 @@ function renderBNPL() {
     }).join('');
 }
 
+// Toggle BNPL section
+function toggleBNPL() {
+    const list = document.getElementById('bnplList');
+    const arrow = document.getElementById('bnplArrow');
+    
+    if (!list) return;
+    
+    const isOpen = list.style.maxHeight && list.style.maxHeight !== '0px';
+    
+    if (isOpen) {
+        // Close
+        list.style.maxHeight = '0';
+        list.style.marginTop = '0';
+        arrow.style.transform = 'rotate(0deg)';
+    } else {
+        // Open
+        list.style.maxHeight = list.scrollHeight + 'px';
+        list.style.marginTop = '1rem';
+        arrow.style.transform = 'rotate(180deg)';
+    }
+}
+
 // Render balance cards
 function renderBalances() {
     let total = 0;

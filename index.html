@@ -41,6 +41,15 @@
             unicode-bidi: plaintext;
         }
         
+        /* BNPL Collapsible */
+        .cursor-pointer {
+            cursor: pointer;
+            user-select: none;
+        }
+        .cursor-pointer:active {
+            opacity: 0.9;
+        }
+        
         /* Mobile Optimizations */
         @media (max-width: 768px) {
             /* Larger text on mobile */
@@ -164,14 +173,19 @@
 
         <!-- BNPL Payments (Tabby & Tamara) -->
         <div class="bg-gradient-to-r from-pink-500 to-orange-500 dark:from-pink-700 dark:to-orange-700 rounded-lg shadow-lg p-4 md:p-6 text-white mb-6">
-            <div class="flex justify-between items-center mb-4">
-                <div>
-                    <h2 class="text-lg md:text-xl font-bold">💳 الدفعات القادمة (تابي & تمارا)</h2>
-                    <p class="text-sm opacity-90">إجمالي المستحق</p>
+            <div class="flex justify-between items-center cursor-pointer" onclick="toggleBNPL()">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                        <h2 class="text-lg md:text-xl font-bold">💳 الدفعات القادمة</h2>
+                        <svg id="bnplArrow" class="w-5 h-5 transition-transform duration-300" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </div>
+                    <p class="text-sm opacity-90">تابي & تمارا</p>
                 </div>
                 <p id="bnplTotal" class="text-2xl md:text-3xl font-bold">0 ر.س</p>
             </div>
-            <div id="bnplList" class="space-y-3">
+            <div id="bnplList" class="space-y-3 overflow-hidden transition-all duration-300 ease-in-out" style="max-height: 0; margin-top: 0;">
                 <!-- BNPL payments will be loaded here -->
             </div>
         </div>
@@ -352,6 +366,6 @@
 
     </div>
 
-    <script src="app.js?v=6"></script>
+    <script src="app.js?v=7"></script>
 </body>
 </html>
