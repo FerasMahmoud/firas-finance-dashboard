@@ -252,6 +252,56 @@ function renderIncomeExpenses() {
     document.getElementById('expensesBar').style.width = `${expensesPercent}%`;
 }
 
+// Get merchant logo URL
+function getMerchantLogo(merchant) {
+    const domain = merchant.toLowerCase()
+        .replace(/\s+/g, '')
+        .replace('sa', '.sa')
+        .replace('online', '.com')
+        .replace('gmbh', '.de');
+    
+    // Try Logo.dev API (free, no key needed)
+    if (merchant.includes('Amazon')) return 'https://logo.clearbit.com/amazon.com';
+    if (merchant.includes('HETZNER')) return 'https://logo.clearbit.com/hetzner.com';
+    if (merchant.includes('EHSAN')) return 'https://logo.clearbit.com/ehsan.sa';
+    if (merchant.includes('Keeta')) return 'https://logo.clearbit.com/keeta.com';
+    if (merchant.includes('Tamara')) return 'https://logo.clearbit.com/tamara.co';
+    
+    // Fallback: generic icon
+    return 'https://ui-avatars.com/api/?name=' + encodeURIComponent(merchant) + '&size=48&background=3B82F6&color=fff';
+}
+
+// Filter by merchant
+function filterByMerchant(merchant) {
+    console.log('🔍 Filtering by merchant:', merchant);
+    
+    filteredTransactions = transactions.filter(t => t.merchant === merchant);
+    renderDashboard();
+    
+    // Scroll to transactions list
+    document.getElementById('transactionsList').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Clear all filters
+function clearFilters() {
+    console.log('🔄 Clearing all filters');
+    
+    // Reset all filter dropdowns
+    const filterBank = document.getElementById('filterBank');
+    const filterCategory = document.getElementById('filterCategory');
+    const filterClassification = document.getElementById('filterClassification');
+    
+    if (filterBank) filterBank.value = '';
+    if (filterCategory) filterCategory.value = '';
+    if (filterClassification) filterClassification.value = '';
+    
+    // Reset to all transactions
+    filteredTransactions = [...transactions];
+    
+    // Reset period to "all"
+    setPeriod('all');
+}
+
 // Render transactions list
 function renderTransactionsList() {
     const container = document.getElementById('transactionsList');
@@ -260,32 +310,27 @@ function renderTransactionsList() {
         .slice(0, 10);
     
     container.innerHTML = last10.map(t => {
-        // ✅ Determine if income or expense based on transactionType only
+        // ✅ Determine if income or expense based on transaction_type
         const isIncome = t.transaction_type === 'دخل';
-        const icon = isIncome ? '📥' : '📤';
         const colorClass = isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
         const sign = isIncome ? '+' : '-';
+        const logoUrl = getMerchantLogo(t.merchant);
         
         return `
-        <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
-            <div class="flex-1">
-                <div class="flex items-center gap-3">
-                    <span class="text-2xl">${icon}</span>
-                    <div>
-                        <p class="font-semibold">${t.merchant}</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">
-                            ${bankNames[t.bank] || t.bank} • ${t.category || 'غير محدد'} • ${t.classification || 'غير محدد'}
-                        </p>
-                        ${t.note ? `<p class="text-xs text-gray-500 dark:text-gray-500">${t.note}</p>` : ''}
-                    </div>
-                </div>
+        <div class="flex items-center gap-3 p-3 md:p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition cursor-pointer" onclick="filterByMerchant('${t.merchant.replace(/'/g, "\\'")}')">
+            <img src="${logoUrl}" alt="${t.merchant}" class="w-10 h-10 md:w-12 md:h-12 rounded-lg object-cover bg-white" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(t.merchant.charAt(0))}&size=48&background=3B82F6&color=fff'">
+            <div class="flex-1 min-w-0">
+                <p class="font-semibold truncate">${t.merchant}</p>
+                <p class="text-xs md:text-sm text-gray-600 dark:text-gray-400 truncate">
+                    ${bankNames[t.bank] || t.bank} • ${t.category || 'غير محدد'}
+                </p>
             </div>
-            <div class="text-left mr-4">
-                <p class="font-bold ${colorClass}">
+            <div class="text-left">
+                <p class="font-bold ${colorClass} text-sm md:text-base whitespace-nowrap">
                     ${sign}${formatCurrency(Math.abs(t.amount))}
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
-                    ${formatDate(t.timestamp)}
+                    ${new Date(t.timestamp).toLocaleDateString('en-GB')}
                 </p>
             </div>
         </div>

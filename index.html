@@ -304,7 +304,12 @@
 
         <!-- Last 10 Transactions -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6">
-            <h3 class="text-base md:text-lg font-semibold mb-4">آخر 10 معاملات</h3>
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-base md:text-lg font-semibold">آخر 10 معاملات</h3>
+                <button onclick="clearFilters()" class="text-sm px-3 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-lg transition">
+                    عرض الكل
+                </button>
+            </div>
             <div class="overflow-x-auto">
                 <div id="transactionsList" class="space-y-2 md:space-y-3">
                     <!-- Transactions will be loaded here -->
@@ -314,6 +319,6 @@
 
     </div>
 
-    <script src="app.js?v=2"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>
