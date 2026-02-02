@@ -1,4 +1,6 @@
 // Finance Dashboard App
+const API_URL = 'https://regulations-air-libs-champagne.trycloudflare.com';
+
 let transactions = [];
 let balances = {};
 let filteredTransactions = [];
@@ -74,12 +76,13 @@ function showErrorNotification(message) {
     }, 5000);
 }
 
-// Load JSON data
+// Load data from API
 async function loadData() {
     try {
+        // Fetch from SQLite API instead of JSON files
         const [transactionsRes, balancesRes] = await Promise.all([
-            fetch('data/transactions.json'),
-            fetch('data/balances.json')
+            fetch(`${API_URL}/api/transactions`),
+            fetch(`${API_URL}/api/banks`)
         ]);
         
         // ✅ CHECK HTTP STATUS
@@ -90,17 +93,34 @@ async function loadData() {
             throw new Error(`HTTP ${balancesRes.status}: ${balancesRes.statusText}`);
         }
         
+        // Parse responses
         transactions = await transactionsRes.json();
-        balances = await balancesRes.json();
+        const banksArray = await balancesRes.json();
+        
+        // Convert banks array to balances object (for compatibility)
+        balances = {};
+        banksArray.forEach(bank => {
+            balances[bank.id] = {
+                balance: bank.balance,
+                lastUpdated: bank.last_updated,
+                account: bank.account,
+                currency: bank.currency
+            };
+        });
+        
         filteredTransactions = [...transactions];
+        
+        console.log(`✅ Loaded ${transactions.length} transactions from API`);
     } catch (error) {
-        // Fallback to sample data if files don't exist
+        console.error('❌ API Error:', error);
+        
+        // Fallback to sample data if API fails
         transactions = getSampleTransactions();
         balances = getSampleBalances();
         filteredTransactions = [...transactions];
         
         // Show user-friendly error message
-        showErrorNotification('تم تحميل بيانات تجريبية. يرجى التحقق من الاتصال بالإنترنت.');
+        showErrorNotification('تعذر الاتصال بالخادم. يتم عرض بيانات تجريبية.');
     }
 }
 
