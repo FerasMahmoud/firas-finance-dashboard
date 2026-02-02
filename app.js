@@ -6,17 +6,20 @@ let charts = {};
 
 // Bank name mappings
 const bankNames = {
+    // Arabic names (used in data)
+    'السعودي الفرنسي': 'السعودي الفرنسي',
+    'الراجحي': 'الراجحي',
+    'برق': 'برق',
+    'تيكمو': 'تيكمو',
+    'STC Bank': 'STC Bank',
+    'Unknown': 'غير محدد',
+    'ATC': 'ATC',
+    // English IDs (backward compatibility)
     'banque-saudi': 'السعودي الفرنسي',
     'alrajhi': 'الراجحي',
     'barq': 'برق',
     'tikmo': 'تيكمو',
-    'stc': 'STC Bank',
-    // Support Arabic names directly
-    'السعودي الفرنسي': 'السعودي الفرنسي',
-    'الراجحي': 'الراجحي',
-    'STC Bank': 'STC Bank',
-    'Unknown': 'غير محدد',
-    'ATC': 'ATC'
+    'stc': 'STC Bank'
 };
 
 // Reverse mapping for balance element IDs
@@ -26,11 +29,6 @@ const bankIdMap = {
     'برق': 'barq',
     'تيكمو': 'tikmo',
     'STC Bank': 'stc',
-    'banque-saudi': 'banque-saudi',
-    'alrajhi': 'alrajhi',
-    'barq': 'barq',
-    'tikmo': 'tikmo',
-    'stc': 'stc',
     'Unknown': 'unknown',
     'ATC': 'atc'
 };
@@ -279,6 +277,19 @@ function renderCategoryChart() {
     const ctx = document.getElementById('categoryChart');
     if (charts.category) charts.category.destroy();
     
+    // Empty data check
+    if (Object.keys(categoryData).length === 0) {
+        const canvas = ctx;
+        const context = canvas.getContext('2d');
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.font = '16px Cairo, Tajawal, -apple-system, Arial, sans-serif';
+        context.fillStyle = document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#4B5563';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText('لا توجد بيانات', canvas.width / 2, canvas.height / 2);
+        return;
+    }
+    
     const isDark = document.documentElement.classList.contains('dark');
     
     charts.category = new Chart(ctx, {
@@ -297,11 +308,13 @@ function renderCategoryChart() {
             maintainAspectRatio: true,
             plugins: {
                 legend: {
+                    rtl: true,
                     position: 'bottom',
                     labels: {
+                        textAlign: 'right',
                         color: isDark ? '#9CA3AF' : '#4B5563',
                         font: {
-                            family: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif'
+                            family: 'Cairo, Tajawal, -apple-system, Arial, sans-serif'
                         }
                     }
                 }
@@ -437,6 +450,32 @@ function applyFilters() {
     
     renderDashboard();
 }
+
+// Close report modal
+function closeReport() {
+    const reportContent = document.getElementById('reportContent');
+    reportContent.classList.add('hidden');
+}
+
+// Close on Escape key
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        const reportContent = document.getElementById('reportContent');
+        if (!reportContent.classList.contains('hidden')) {
+            closeReport();
+        }
+    }
+});
+
+// Close on click outside modal
+document.addEventListener('DOMContentLoaded', () => {
+    const reportContent = document.getElementById('reportContent');
+    reportContent.addEventListener('click', (e) => {
+        if (e.target.id === 'reportContent') {
+            closeReport();
+        }
+    });
+});
 
 // Show reports
 function showReport(type) {
