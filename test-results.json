@@ -1,0 +1,291 @@
+{
+  "timestamp": "2026-02-02T04:49:20.673Z",
+  "summary": {
+    "total": 39,
+    "passed": 38,
+    "failed": 1,
+    "warnings": 1
+  },
+  "tests": [
+    {
+      "name": "Daily Report - Transaction Count",
+      "passed": true,
+      "expected": ">= 0",
+      "actual": 5,
+      "details": "Should return array (can be empty if no transactions today)"
+    },
+    {
+      "name": "Daily Report - Income Calculation",
+      "passed": true,
+      "expected": "Non-negative number",
+      "actual": "٠٫٠٠ ر.س",
+      "details": "Income should be sum of positive amounts"
+    },
+    {
+      "name": "Daily Report - Expenses Calculation",
+      "passed": true,
+      "expected": "Non-negative number",
+      "actual": "٤٠٫٧٠ ر.س",
+      "details": "Expenses should be sum of negative amounts (displayed positive)"
+    },
+    {
+      "name": "Daily Report - Net Calculation",
+      "passed": true,
+      "expected": "؜-٤٠٫٧٠ ر.س",
+      "actual": "؜-٤٠٫٧٠ ر.س",
+      "details": "Net = Income - Expenses"
+    },
+    {
+      "name": "Daily Report - Date Filter Check (sample 1)",
+      "passed": true,
+      "expected": "Mon Feb 02 2026",
+      "actual": "Mon Feb 02 2026",
+      "details": "Transaction ID 9"
+    },
+    {
+      "name": "Daily Report - Date Filter Check (sample 2)",
+      "passed": true,
+      "expected": "Mon Feb 02 2026",
+      "actual": "Mon Feb 02 2026",
+      "details": "Transaction ID 10"
+    },
+    {
+      "name": "Daily Report - Date Filter Check (sample 3)",
+      "passed": true,
+      "expected": "Mon Feb 02 2026",
+      "actual": "Mon Feb 02 2026",
+      "details": "Transaction ID 11"
+    },
+    {
+      "name": "Weekly Report - Transaction Count",
+      "passed": true,
+      "expected": ">= 5",
+      "actual": 21,
+      "details": "Weekly should include daily transactions"
+    },
+    {
+      "name": "Weekly Report - Income Calculation",
+      "passed": true,
+      "expected": "Non-negative number",
+      "actual": "٠٫٠٠ ر.س",
+      "details": ""
+    },
+    {
+      "name": "Weekly Report - Expenses Calculation",
+      "passed": true,
+      "expected": "Non-negative number",
+      "actual": "١٬٠٣٦٫١٢ ر.س",
+      "details": ""
+    },
+    {
+      "name": "Weekly Report - Net Calculation",
+      "passed": true,
+      "expected": "؜-١٬٠٣٦٫١٢ ر.س",
+      "actual": "؜-١٬٠٣٦٫١٢ ر.س",
+      "details": ""
+    },
+    {
+      "name": "Weekly Report - Date Filter Check (sample 1)",
+      "passed": true,
+      "expected": ">= Mon Jan 26 2026",
+      "actual": "Sun Feb 01 2026",
+      "details": "Transaction ID 1"
+    },
+    {
+      "name": "Weekly Report - Date Filter Check (sample 2)",
+      "passed": true,
+      "expected": ">= Mon Jan 26 2026",
+      "actual": "Sat Jan 31 2026",
+      "details": "Transaction ID 2"
+    },
+    {
+      "name": "Weekly Report - Date Filter Check (sample 3)",
+      "passed": true,
+      "expected": ">= Mon Jan 26 2026",
+      "actual": "Sun Feb 01 2026",
+      "details": "Transaction ID 3"
+    },
+    {
+      "name": "Monthly Report - Transaction Count",
+      "passed": false,
+      "expected": ">= 21",
+      "actual": 9,
+      "details": "Monthly should include weekly transactions (usually)"
+    },
+    {
+      "name": "Monthly Report - Income Calculation",
+      "passed": true,
+      "expected": "Non-negative number",
+      "actual": "٠٫٠٠ ر.س",
+      "details": ""
+    },
+    {
+      "name": "Monthly Report - Expenses Calculation",
+      "passed": true,
+      "expected": "Non-negative number",
+      "actual": "١٧٤٫٦٠ ر.س",
+      "details": ""
+    },
+    {
+      "name": "Monthly Report - Net Calculation",
+      "passed": true,
+      "expected": "؜-١٧٤٫٦٠ ر.س",
+      "actual": "؜-١٧٤٫٦٠ ر.س",
+      "details": ""
+    },
+    {
+      "name": "Monthly Report - Category Breakdown Sum",
+      "passed": true,
+      "expected": "١٧٤٫٦٠ ر.س",
+      "actual": "١٧٤٫٦٠ ر.س",
+      "details": "Sum of category amounts should equal total expenses"
+    },
+    {
+      "name": "Monthly Report - Category Breakdown Exists",
+      "passed": true,
+      "expected": "> 0 categories",
+      "actual": "4 categories",
+      "details": "Should have at least one category if expenses exist"
+    },
+    {
+      "name": "Monthly Report - Date Filter Check (sample 1)",
+      "passed": true,
+      "expected": "Month 1, Year 2026",
+      "actual": "Month 1, Year 2026",
+      "details": "Transaction ID 1"
+    },
+    {
+      "name": "Monthly Report - Date Filter Check (sample 2)",
+      "passed": true,
+      "expected": "Month 1, Year 2026",
+      "actual": "Month 1, Year 2026",
+      "details": "Transaction ID 3"
+    },
+    {
+      "name": "Monthly Report - Date Filter Check (sample 3)",
+      "passed": true,
+      "expected": "Month 1, Year 2026",
+      "actual": "Month 1, Year 2026",
+      "details": "Transaction ID 5"
+    },
+    {
+      "name": "Comparison Report - Previous Month Calculation",
+      "passed": true,
+      "expected": ">= 0",
+      "actual": 39,
+      "details": "Should find previous month transactions"
+    },
+    {
+      "name": "Comparison Report - Income Difference",
+      "passed": true,
+      "expected": "؜-٢٤٠٫٠٠ ر.س",
+      "actual": "؜-٢٤٠٫٠٠ ر.س",
+      "details": ""
+    },
+    {
+      "name": "Comparison Report - Expenses Difference",
+      "passed": true,
+      "expected": "؜-٢٬٩٥٨٫٧٣ ر.س",
+      "actual": "؜-٢٬٩٥٨٫٧٣ ر.س",
+      "details": ""
+    },
+    {
+      "name": "Comparison Report - Net Difference",
+      "passed": true,
+      "expected": "٢٬٧١٨٫٧٣ ر.س",
+      "actual": "٢٬٧١٨٫٧٣ ر.س",
+      "details": ""
+    },
+    {
+      "name": "Comparison Report - Previous Month Filter (sample 1)",
+      "passed": true,
+      "expected": "Month 0, Year 2026",
+      "actual": "Month 0, Year 2026",
+      "details": "Transaction ID 2"
+    },
+    {
+      "name": "Comparison Report - Previous Month Filter (sample 2)",
+      "passed": true,
+      "expected": "Month 0, Year 2026",
+      "actual": "Month 0, Year 2026",
+      "details": "Transaction ID 4"
+    },
+    {
+      "name": "Comparison Report - Previous Month Filter (sample 3)",
+      "passed": true,
+      "expected": "Month 0, Year 2026",
+      "actual": "Month 0, Year 2026",
+      "details": "Transaction ID 6"
+    },
+    {
+      "name": "Edge Case - Empty Data Count",
+      "passed": true,
+      "expected": 0,
+      "actual": 0,
+      "details": ""
+    },
+    {
+      "name": "Edge Case - Empty Data Income",
+      "passed": true,
+      "expected": 0,
+      "actual": 0,
+      "details": "Should return 0 for income"
+    },
+    {
+      "name": "Edge Case - Empty Data Expenses",
+      "passed": true,
+      "expected": 0,
+      "actual": 0,
+      "details": "Should return 0 for expenses"
+    },
+    {
+      "name": "Edge Case - Single Transaction Count",
+      "passed": true,
+      "expected": 1,
+      "actual": 1,
+      "details": ""
+    },
+    {
+      "name": "Edge Case - Single Transaction Calculation",
+      "passed": true,
+      "expected": "٢٫٠٠ ر.س",
+      "actual": "٢٫٠٠ ر.س",
+      "details": "Transaction type: صرف"
+    },
+    {
+      "name": "Edge Case - Handle Null Values",
+      "passed": true,
+      "expected": "Should not crash",
+      "actual": "8 transactions with nulls",
+      "details": "Application should handle null values gracefully"
+    },
+    {
+      "name": "Income/Expense - Classification Coverage",
+      "passed": true,
+      "expected": 267,
+      "actual": 267,
+      "details": "All transactions should be classified"
+    },
+    {
+      "name": "Income/Expense - صرف Classification",
+      "passed": true,
+      "expected": "All صرف should be expenses",
+      "actual": "All correct",
+      "details": "265 صرف transactions"
+    },
+    {
+      "name": "Income/Expense - دخل Classification",
+      "passed": true,
+      "expected": "All دخل should be income",
+      "actual": "All correct",
+      "details": "0 دخل transactions"
+    }
+  ],
+  "data": {
+    "totalTransactions": 267,
+    "todayCount": 5,
+    "weekCount": 21,
+    "monthCount": 9,
+    "prevMonthCount": 39
+  }
+}

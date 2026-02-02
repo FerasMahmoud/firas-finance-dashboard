@@ -37,11 +37,44 @@ const bankIdMap = {
 
 // Load data on page load
 document.addEventListener('DOMContentLoaded', async () => {
+    showLoadingIndicator();
     await loadData();
+    hideLoadingIndicator();
     initThemeToggle();
     initFilters();
     renderDashboard();
 });
+
+// Show loading indicator
+function showLoadingIndicator() {
+    const indicator = document.createElement('div');
+    indicator.id = 'loadingIndicator';
+    indicator.className = 'fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex items-center justify-center z-50';
+    indicator.innerHTML = '<div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl"><div class="text-center"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div><p class="text-lg font-semibold">جاري تحميل البيانات...</p></div></div>';
+    document.body.appendChild(indicator);
+}
+
+// Hide loading indicator
+function hideLoadingIndicator() {
+    const indicator = document.getElementById('loadingIndicator');
+    if (indicator) {
+        indicator.remove();
+    }
+}
+
+// Show error notification
+function showErrorNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'fixed top-4 right-4 bg-red-500 text-white px-6 py-4 rounded-lg shadow-lg z-50 animate-fade-in';
+    notification.innerHTML = `<p class="font-semibold">${message}</p>`;
+    document.body.appendChild(notification);
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        notification.classList.add('animate-fade-out');
+        setTimeout(() => notification.remove(), 500);
+    }, 5000);
+}
 
 // Load JSON data
 async function loadData() {
@@ -51,15 +84,22 @@ async function loadData() {
             fetch('data/balances.json')
         ]);
         
+        // Check if responses are successful
+        if (!transactionsRes.ok || !balancesRes.ok) {
+            throw new Error(`Failed to load data: transactions(${transactionsRes.status}), balances(${balancesRes.status})`);
+        }
+        
         transactions = await transactionsRes.json();
         balances = await balancesRes.json();
         filteredTransactions = [...transactions];
     } catch (error) {
-        console.error('Error loading data:', error);
-        // Use sample data if files don't exist
+        // Silent fallback to sample data if files don't exist
         transactions = getSampleTransactions();
         balances = getSampleBalances();
         filteredTransactions = [...transactions];
+        
+        // Show user-friendly error message
+        showErrorNotification('تم تحميل بيانات تجريبية. يرجى التحقق من الاتصال بالإنترنت.');
     }
 }
 

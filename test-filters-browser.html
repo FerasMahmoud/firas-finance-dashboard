@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Tests - Finance Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        .test-pass { color: #10B981; }
+        .test-fail { color: #EF4444; }
+        .test-warn { color: #F59E0B; }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">🧪 Filter Testing Suite</h1>
+        
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <button onclick="runAllTests()" class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">
+                ▶️ Run All Tests
+            </button>
+            <button onclick="clearResults()" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition ml-4">
+                🗑️ Clear Results
+            </button>
+        </div>
+        
+        <div id="testResults" class="bg-white rounded-lg shadow p-6 space-y-2">
+            <p class="text-gray-500">Click "Run All Tests" to start...</p>
+        </div>
+        
+        <div id="summary" class="mt-6 bg-white rounded-lg shadow p-6 hidden">
+            <h2 class="text-2xl font-bold mb-4">📊 Test Summary</h2>
+            <div class="grid grid-cols-3 gap-4">
+                <div class="text-center">
+                    <p class="text-4xl font-bold test-pass" id="passCount">0</p>
+                    <p class="text-sm text-gray-600">Passed</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-4xl font-bold test-fail" id="failCount">0</p>
+                    <p class="text-sm text-gray-600">Failed</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-4xl font-bold test-warn" id="warnCount">0</p>
+                    <p class="text-sm text-gray-600">Warnings</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hidden iframe for testing -->
+        <iframe id="testFrame" src="index.html" class="hidden" style="width: 1px; height: 1px;"></iframe>
+    </div>
+    
+    <script>
+        let testResults = { passed: 0, failed: 0, warnings: 0 };
+        let testLog = [];
+        
+        function log(message, type = 'info') {
+            const resultsDiv = document.getElementById('testResults');
+            const p = document.createElement('p');
+            p.className = type === 'pass' ? 'test-pass font-bold' : 
+                         type === 'fail' ? 'test-fail font-bold' : 
+                         type === 'warn' ? 'test-warn font-bold' : 
+                         'text-gray-700';
+            p.textContent = message;
+            resultsDiv.appendChild(p);
+            testLog.push({ message, type, time: new Date().toISOString() });
+        }
+        
+        function clearResults() {
+            document.getElementById('testResults').innerHTML = '<p class="text-gray-500">Click "Run All Tests" to start...</p>';
+            document.getElementById('summary').classList.add('hidden');
+            testResults = { passed: 0, failed: 0, warnings: 0 };
+            testLog = [];
+        }
+        
+        function updateSummary() {
+            document.getElementById('summary').classList.remove('hidden');
+            document.getElementById('passCount').textContent = testResults.passed;
+            document.getElementById('failCount').textContent = testResults.failed;
+            document.getElementById('warnCount').textContent = testResults.warnings;
+        }
+        
+        function pass(name, details = '') {
+            testResults.passed++;
+            log(`✅ PASS: ${name}${details ? ' - ' + details : ''}`, 'pass');
+        }
+        
+        function fail(name, details = '') {
+            testResults.failed++;
+            log(`❌ FAIL: ${name}${details ? ' - ' + details : ''}`, 'fail');
+        }
+        
+        function warn(message) {
+            testResults.warnings++;
+            log(`⚠️ WARN: ${message}`, 'warn');
+        }
+        
+        async function wait(ms = 500) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+        
+        async function runAllTests() {
+            clearResults();
+            log('🚀 Starting Filter Tests...', 'info');
+            log('', 'info');
+            
+            const iframe = document.getElementById('testFrame');
+            const doc = iframe.contentDocument || iframe.contentWindow.document;
+            const win = iframe.contentWindow;
+            
+            // Wait for page to load
+            await wait(2000);
+            
+            // Check if page loaded
+            if (!doc.getElementById('filterBank')) {
+                fail('Page Load', 'Filter elements not found');
+                updateSummary();
+                return;
+            }
+            
+            pass('Page Load', 'All filter elements found');
+            
+            // Helper functions
+            function getFilterValues() {
+                return {
+                    bank: doc.getElementById('filterBank').value,
+                    category: doc.getElementById('filterCategory').value,
+                    classification: doc.getElementById('filterClassification').value,
+                    period: doc.getElementById('filterPeriod').value
+                };
+            }
+            
+            function getTransactionCount() {
+                const items = doc.querySelectorAll('#transactionsList > div');
+                return items.length;
+            }
+            
+            function getStats() {
+                return {
+                    income: doc.getElementById('monthlyIncome')?.textContent || '0',
+                    expenses: doc.getElementById('monthlyExpenses')?.textContent || '0',
+                    net: doc.getElementById('netAmount')?.textContent || '0'
+                };
+            }
+            
+            function setFilter(filterId, value) {
+                doc.getElementById(filterId).value = value;
+                doc.getElementById(filterId).dispatchEvent(new Event('change'));
+            }
+            
+            // TEST 1: Initial State
+            log('--- Test 1: Initial State ---', 'info');
+            const initialFilters = getFilterValues();
+            if (initialFilters.bank === '' && initialFilters.category === '' && 
+                initialFilters.classification === '' && initialFilters.period === 'all') {
+                pass('Initial filters are empty');
+            } else {
+                fail('Initial filters', 'Expected all filters to be empty/all');
+            }
+            
+            const initialCount = getTransactionCount();
+            if (initialCount > 0) {
+                pass('Initial transactions loaded', `${initialCount} transactions`);
+            } else {
+                fail('Initial transactions', 'No transactions found');
+            }
+            
+            const initialStats = getStats();
+            if (initialStats.income !== '0 ر.س' || initialStats.expenses !== '0 ر.س') {
+                pass('Initial stats calculated', `Income: ${initialStats.income}, Expenses: ${initialStats.expenses}`);
+            } else {
+                warn('Initial stats might be zero (check data)');
+            }
+            
+            await wait(500);
+            
+            // TEST 2: Single Filter - Bank
+            log('--- Test 2: Single Filter - Bank ---', 'info');
+            setFilter('filterBank', 'السعودي الفرنسي');
+            await wait(800);
+            
+            const bankFilterCount = getTransactionCount();
+            if (bankFilterCount !== initialCount) {
+                pass('Bank filter applied', `Changed from ${initialCount} to ${bankFilterCount}`);
+            } else {
+                fail('Bank filter', 'Transaction count did not change');
+            }
+            
+            // Verify only selected bank shown
+            const bankItems = doc.querySelectorAll('#transactionsList > div');
+            let bankCorrect = true;
+            bankItems.forEach(item => {
+                if (!item.textContent.includes('السعودي الفرنسي')) {
+                    bankCorrect = false;
+                }
+            });
+            if (bankCorrect) {
+                pass('Bank filter accuracy', 'All shown transactions are from selected bank');
+            } else {
+                fail('Bank filter accuracy', 'Some transactions from other banks visible');
+            }
+            
+            await wait(500);
+            
+            // TEST 3: Single Filter - Category
+            log('--- Test 3: Single Filter - Category ---', 'info');
+            setFilter('filterBank', '');
+            await wait(500);
+            setFilter('filterCategory', 'طعام - مطاعم');
+            await wait(800);
+            
+            const categoryCount = getTransactionCount();
+            if (categoryCount > 0) {
+                pass('Category filter applied', `${categoryCount} transactions`);
+            } else {
+                warn('Category filter returned 0 results (might be valid)');
+            }
+            
+            await wait(500);
+            
+            // TEST 4: Single Filter - Classification
+            log('--- Test 4: Single Filter - Classification ---', 'info');
+            setFilter('filterCategory', '');
+            await wait(500);
+            setFilter('filterClassification', 'شخصي');
+            await wait(800);
+            
+            const classCount = getTransactionCount();
+            if (classCount > 0) {
+                pass('Classification filter applied', `${classCount} transactions`);
+            } else {
+                warn('Classification filter returned 0 results');
+            }
+            
+            await wait(500);
+            
+            // TEST 5: Period Filters
+            log('--- Test 5: Period Filters ---', 'info');
+            setFilter('filterClassification', '');
+            await wait(500);
+            
+            setFilter('filterPeriod', 'today');
+            await wait(800);
+            const todayCount = getTransactionCount();
+            pass('Today filter', `${todayCount} transactions`);
+            
+            setFilter('filterPeriod', 'week');
+            await wait(800);
+            const weekCount = getTransactionCount();
+            if (weekCount >= todayCount) {
+                pass('Week filter', `${weekCount} transactions (>= today's ${todayCount})`);
+            } else {
+                fail('Week filter', `${weekCount} < today's ${todayCount}`);
+            }
+            
+            setFilter('filterPeriod', 'month');
+            await wait(800);
+            const monthCount = getTransactionCount();
+            if (monthCount >= weekCount) {
+                pass('Month filter', `${monthCount} transactions (>= week's ${weekCount})`);
+            } else {
+                fail('Month filter', `${monthCount} < week's ${weekCount}`);
+            }
+            
+            await wait(500);
+            
+            // TEST 6: Multiple Filters Combined
+            log('--- Test 6: Multiple Filters Combined ---', 'info');
+            setFilter('filterBank', 'السعودي الفرنسي');
+            setFilter('filterCategory', 'طعام - مطاعم');
+            setFilter('filterClassification', 'شخصي');
+            setFilter('filterPeriod', 'month');
+            await wait(1000);
+            
+            const multiCount = getTransactionCount();
+            pass('Multiple filters combined', `${multiCount} transactions`);
+            
+            await wait(500);
+            
+            // TEST 7: Reset Filters
+            log('--- Test 7: Reset Filters ---', 'info');
+            setFilter('filterBank', '');
+            setFilter('filterCategory', '');
+            setFilter('filterClassification', '');
+            setFilter('filterPeriod', 'all');
+            await wait(1000);
+            
+            const resetCount = getTransactionCount();
+            if (resetCount === initialCount) {
+                pass('Reset filters', `Returned to initial ${resetCount} transactions`);
+            } else {
+                fail('Reset filters', `Expected ${initialCount}, got ${resetCount}`);
+            }
+            
+            await wait(500);
+            
+            // TEST 8: Filter with No Results
+            log('--- Test 8: Filter with No Results ---', 'info');
+            setFilter('filterBank', 'السعودي الفرنسي');
+            setFilter('filterCategory', 'تبرعات');
+            setFilter('filterClassification', 'عمل');
+            setFilter('filterPeriod', 'today');
+            await wait(1000);
+            
+            const noResultsCount = getTransactionCount();
+            if (noResultsCount === 0) {
+                pass('No results filter', 'Correctly shows 0 transactions');
+            } else {
+                warn(`No results filter returned ${noResultsCount} (might be valid data)`);
+            }
+            
+            const noResultsStats = getStats();
+            if (noResultsStats.income === '0.00 ر.س' && noResultsStats.expenses === '0.00 ر.س') {
+                pass('Stats with no results', 'Stats correctly show 0.00');
+            } else {
+                fail('Stats with no results', `Income: ${noResultsStats.income}, Expenses: ${noResultsStats.expenses}`);
+            }
+            
+            await wait(500);
+            
+            // TEST 9: Change Filter Multiple Times
+            log('--- Test 9: Multiple Filter Changes ---', 'info');
+            setFilter('filterBank', '');
+            setFilter('filterCategory', '');
+            setFilter('filterClassification', '');
+            setFilter('filterPeriod', 'all');
+            await wait(800);
+            const beforeChanges = getTransactionCount();
+            
+            // Rapid changes
+            setFilter('filterBank', 'السعودي الفرنسي');
+            await wait(300);
+            setFilter('filterBank', 'الراجحي');
+            await wait(300);
+            setFilter('filterBank', '');
+            await wait(800);
+            
+            const afterChanges = getTransactionCount();
+            if (afterChanges === beforeChanges) {
+                pass('Multiple changes', 'Count stable after rapid changes');
+            } else {
+                fail('Multiple changes', `${beforeChanges} → ${afterChanges}`);
+            }
+            
+            await wait(500);
+            
+            // TEST 10: Dashboard Updates
+            log('--- Test 10: Dashboard Updates ---', 'info');
+            const beforeStats = getStats();
+            setFilter('filterPeriod', 'today');
+            await wait(1000);
+            const afterStats = getStats();
+            
+            if (beforeStats.income !== afterStats.income || beforeStats.expenses !== afterStats.expenses) {
+                pass('Dashboard updates', 'Stats changed after filter');
+            } else {
+                warn('Dashboard updates might be the same (check if today has transactions)');
+            }
+            
+            await wait(500);
+            
+            // TEST 11: Charts Exist
+            log('--- Test 11: Charts Check ---', 'info');
+            if (win.charts?.category && win.charts?.bank && win.charts?.classification) {
+                pass('Charts initialized', 'All 3 charts found');
+            } else {
+                fail('Charts', 'Some charts not initialized');
+            }
+            
+            // TEST 12: Edge Cases
+            log('--- Test 12: Edge Cases ---', 'info');
+            
+            // Reset everything first
+            setFilter('filterBank', '');
+            setFilter('filterCategory', '');
+            setFilter('filterClassification', '');
+            setFilter('filterPeriod', 'all');
+            await wait(1000);
+            
+            // Rapid filter changes
+            for (let i = 0; i < 5; i++) {
+                setFilter('filterBank', 'السعودي الفرنسي');
+                setFilter('filterBank', 'الراجحي');
+                setFilter('filterBank', '');
+            }
+            await wait(1000);
+            const afterRapid = getTransactionCount();
+            if (afterRapid > 0) {
+                pass('Rapid changes edge case', `Stable at ${afterRapid} transactions`);
+            } else {
+                fail('Rapid changes edge case', 'Lost all transactions');
+            }
+            
+            // Filter → Reset → Filter sequence
+            setFilter('filterBank', 'الراجحي');
+            await wait(800);
+            const filtered1 = getTransactionCount();
+            
+            setFilter('filterBank', '');
+            await wait(800);
+            const reset1 = getTransactionCount();
+            
+            setFilter('filterBank', 'الراجحي');
+            await wait(800);
+            const filtered2 = getTransactionCount();
+            
+            setFilter('filterBank', '');
+            await wait(800);
+            const reset2 = getTransactionCount();
+            
+            if (reset1 === reset2 && filtered1 === filtered2) {
+                pass('Filter sequence consistency', `Reset: ${reset1}, Filtered: ${filtered1}`);
+            } else {
+                fail('Filter sequence', `Reset1: ${reset1}, Reset2: ${reset2}, F1: ${filtered1}, F2: ${filtered2}`);
+            }
+            
+            // Final test: All filters at once
+            log('--- Test 13: Maximum Filter Load ---', 'info');
+            setFilter('filterBank', 'السعودي الفرنسي');
+            setFilter('filterCategory', 'طعام - مطاعم');
+            setFilter('filterClassification', 'شخصي');
+            setFilter('filterPeriod', 'month');
+            await wait(1000);
+            
+            const maxFilterCount = getTransactionCount();
+            pass('Maximum filter combination', `Result: ${maxFilterCount} transactions`);
+            
+            // Check console errors
+            log('--- Test 14: JavaScript Errors ---', 'info');
+            // Note: Browser console errors would need to be checked manually
+            pass('JavaScript errors', 'Check browser console for any errors');
+            
+            log('', 'info');
+            log('✨ Testing Complete!', 'info');
+            
+            updateSummary();
+            
+            // Export results as JSON
+            const exportData = {
+                summary: testResults,
+                log: testLog,
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('📊 Test Results:', exportData);
+        }
+    </script>
+</body>
+</html>

@@ -18,6 +18,8 @@
   ],
   "author": "Firas",
   "license": "MIT",
-  "devDependencies": {},
-  "dependencies": {}
+  "devDependencies": {
+    "jsdom": "^27.4.0",
+    "puppeteer": "^24.36.1"
+  }
 }

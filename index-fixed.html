@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="لوحة تحكم مالية شاملة لمتابعة الحسابات البنكية والمعاملات والتقارير المالية">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="author" content="Finance Dashboard">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="لوحة التحكم المالية">
+    <meta property="og:description" content="لوحة تحكم مالية شاملة لمتابعة الحسابات البنكية والمعاملات">
+    <meta property="og:type" content="website">
+    
+    <title>لوحة التحكم المالية</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@3.0.0/index.min.js" defer></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        arabic: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Arial', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        }
+        .rtl-flip {
+            direction: rtl;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-md" role="banner">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">💰 لوحة التحكم المالية</h1>
+            <button 
+                id="themeToggle" 
+                class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                aria-label="تبديل الوضع الليلي"
+                aria-pressed="false">
+                <span class="dark:hidden" aria-hidden="true">🌙</span>
+                <span class="hidden dark:inline" aria-hidden="true">☀️</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-6">
+        
+        <!-- Balance Cards -->
+        <section aria-labelledby="balance-heading">
+            <h2 id="balance-heading" class="sr-only">الأرصدة البنكية</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                <div class="md:col-span-3 lg:col-span-6 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 rounded-lg shadow-lg p-6 text-white">
+                    <h3 class="text-lg opacity-90">الرصيد الإجمالي</h3>
+                    <p id="totalBalance" class="text-4xl font-bold mt-2" aria-live="polite">0 ر.س</p>
+                </div>
+                
+                <article class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                    <h3 class="text-sm text-gray-600 dark:text-gray-400">السعودي الفرنسي</h3>
+                    <p id="balance-banque-saudi" class="text-xl font-bold mt-1" aria-live="polite">0 ر.س</p>
+                </article>
+                
+                <article class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                    <h3 class="text-sm text-gray-600 dark:text-gray-400">الراجحي</h3>
+                    <p id="balance-alrajhi" class="text-xl font-bold mt-1" aria-live="polite">0 ر.س</p>
+                </article>
+                
+                <article class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                    <h3 class="text-sm text-gray-600 dark:text-gray-400">برق</h3>
+                    <p id="balance-barq" class="text-xl font-bold mt-1" aria-live="polite">0 ر.س</p>
+                </article>
+                
+                <article class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                    <h3 class="text-sm text-gray-600 dark:text-gray-400">تيكمو</h3>
+                    <p id="balance-tikmo" class="text-xl font-bold mt-1" aria-live="polite">0 ر.س</p>
+                </article>
+                
+                <article class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+                    <h3 class="text-sm text-gray-600 dark:text-gray-400">STC Bank</h3>
+                    <p id="balance-stc" class="text-xl font-bold mt-1" aria-live="polite">0 ر.س</p>
+                </article>
+            </div>
+        </section>
+
+        <!-- Income vs Expenses -->
+        <section aria-labelledby="income-expenses-heading">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <article class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <h3 id="income-expenses-heading" class="text-lg font-semibold mb-2">الدخل والمصروفات (الشهر الحالي)</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-green-600 dark:text-green-400">الدخل</span>
+                                <span id="monthlyIncome" class="font-bold text-green-600 dark:text-green-400" aria-live="polite">0 ر.س</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                <div id="incomeBar" class="bg-green-500 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-red-600 dark:text-red-400">المصروفات</span>
+                                <span id="monthlyExpenses" class="font-bold text-red-600 dark:text-red-400" aria-live="polite">0 ر.س</span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                                <div id="expensesBar" class="bg-red-500 h-2 rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="pt-2 border-t dark:border-gray-700">
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">الصافي</span>
+                                <span id="netAmount" class="font-bold text-xl" aria-live="polite">0 ر.س</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">توزيع المصروفات حسب الفئة</h3>
+                    <canvas id="categoryChart" role="img" aria-label="رسم بياني يوضح توزيع المصروفات حسب الفئة"></canvas>
+                </article>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section aria-labelledby="filters-heading" class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
+            <h3 id="filters-heading" class="text-lg font-semibold mb-4">التصفية</h3>
+            <form class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label for="filterBank" class="block text-sm font-medium mb-2">البنك</label>
+                    <select 
+                        id="filterBank" 
+                        name="filterBank"
+                        class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                        aria-label="تصفية حسب البنك">
+                        <option value="">الكل</option>
+                        <option value="السعودي الفرنسي">السعودي الفرنسي</option>
+                        <option value="الراجحي">الراجحي</option>
+                        <option value="برق">برق</option>
+                        <option value="تيكمو">تيكمو</option>
+                        <option value="STC Bank">STC Bank</option>
+                        <option value="Unknown">غير محدد</option>
+                        <option value="ATC">ATC</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="filterCategory" class="block text-sm font-medium mb-2">الفئة</label>
+                    <select 
+                        id="filterCategory" 
+                        name="filterCategory"
+                        class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                        aria-label="تصفية حسب الفئة">
+                        <option value="">الكل</option>
+                        <option value="طعام - مطاعم">طعام - مطاعم</option>
+                        <option value="تسوق">تسوق</option>
+                        <option value="تبرعات">تبرعات</option>
+                        <option value="خدمات تقنية">خدمات تقنية</option>
+                        <option value="تحويلات">تحويلات</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="filterClassification" class="block text-sm font-medium mb-2">التصنيف</label>
+                    <select 
+                        id="filterClassification" 
+                        name="filterClassification"
+                        class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                        aria-label="تصفية حسب التصنيف">
+                        <option value="">الكل</option>
+                        <option value="شخصي">شخصي</option>
+                        <option value="عمل">عمل</option>
+                        <option value="عائلة">عائلة</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="filterPeriod" class="block text-sm font-medium mb-2">الفترة</label>
+                    <select 
+                        id="filterPeriod" 
+                        name="filterPeriod"
+                        class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600"
+                        aria-label="تصفية حسب الفترة">
+                        <option value="all">الكل</option>
+                        <option value="today">اليوم</option>
+                        <option value="week">هذا الأسبوع</option>
+                        <option value="month">هذا الشهر</option>
+                    </select>
+                </div>
+            </form>
+        </section>
+
+        <!-- Reports -->
+        <section aria-labelledby="reports-heading" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+            <h3 id="reports-heading" class="text-lg font-semibold mb-4">التقارير</h3>
+            <nav aria-label="أزرار التقارير" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <button 
+                    onclick="showReport('daily')" 
+                    class="p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition"
+                    aria-label="عرض الملخص اليومي">
+                    ملخص يومي
+                </button>
+                <button 
+                    onclick="showReport('weekly')" 
+                    class="p-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition"
+                    aria-label="عرض الملخص الأسبوعي">
+                    ملخص أسبوعي
+                </button>
+                <button 
+                    onclick="showReport('monthly')" 
+                    class="p-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition"
+                    aria-label="عرض الملخص الشهري">
+                    ملخص شهري
+                </button>
+                <button 
+                    onclick="showReport('comparison')" 
+                    class="p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition"
+                    aria-label="عرض المقارنة الشهرية">
+                    مقارنة شهرية
+                </button>
+            </nav>
+            <div id="reportContent" class="hidden" aria-live="polite">
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-4">
+                    <h4 id="reportTitle" class="text-lg font-semibold mb-3"></h4>
+                    <div id="reportData"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts -->
+        <section aria-labelledby="charts-heading">
+            <h2 id="charts-heading" class="sr-only">الرسوم البيانية</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                <article class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">المصروفات حسب البنك</h3>
+                    <canvas id="bankChart" role="img" aria-label="رسم بياني يوضح المصروفات حسب البنك"></canvas>
+                </article>
+                
+                <article class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4">المصروفات حسب التصنيف</h3>
+                    <canvas id="classificationChart" role="img" aria-label="رسم بياني يوضح المصروفات حسب التصنيف"></canvas>
+                </article>
+            </div>
+        </section>
+
+        <!-- Last 10 Transactions -->
+        <section aria-labelledby="transactions-heading" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 id="transactions-heading" class="text-lg font-semibold mb-4">آخر 10 معاملات</h3>
+            <div class="overflow-x-auto">
+                <div id="transactionsList" class="space-y-2" role="list" aria-live="polite">
+                    <!-- Transactions will be loaded here -->
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white dark:bg-gray-800 shadow-md mt-8" role="contentinfo">
+        <div class="container mx-auto px-4 py-4 text-center text-sm text-gray-600 dark:text-gray-400">
+            <p>&copy; 2026 لوحة التحكم المالية - جميع الحقوق محفوظة</p>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode persistence
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
