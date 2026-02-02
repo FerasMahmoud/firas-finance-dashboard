@@ -220,7 +220,7 @@ function renderBNPL() {
                 </div>
                 <div class="text-left">
                     <p class="font-bold text-lg text-gray-900 dark:text-gray-100">${formatCurrency(p.amount)}</p>
-                    <p class="text-xs text-gray-500">${new Date(p.due_date).toLocaleDateString('ar-SA')}</p>
+                    <p class="text-xs text-gray-500">${new Date(p.due_date).toLocaleDateString('en-GB')}</p>
                 </div>
             </div>
         </div>
@@ -916,7 +916,7 @@ function initThemeToggle() {
 
 // Utility functions
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('ar-SA', {
+    return new Intl.NumberFormat('en-US', {
         style: 'decimal',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
@@ -925,7 +925,7 @@ function formatCurrency(amount) {
 
 function formatDate(timestamp) {
     const date = new Date(timestamp);
-    return new Intl.DateTimeFormat('ar-SA', {
+    return new Intl.DateTimeFormat('en-GB', {
         year: 'numeric',
         month: 'short',
         day: 'numeric',

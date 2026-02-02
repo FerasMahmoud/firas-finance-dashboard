@@ -27,6 +27,20 @@
             direction: rtl;
         }
         
+        /* Force English (Western) numerals everywhere */
+        * {
+            font-variant-numeric: lining-nums;
+        }
+        body, html {
+            direction: rtl;
+            unicode-bidi: bidi-override;
+        }
+        /* Force LTR for numbers */
+        [dir="rtl"] input, [dir="rtl"] time, [dir="rtl"] .number, 
+        [dir="rtl"] p, [dir="rtl"] span, [dir="rtl"] div {
+            unicode-bidi: plaintext;
+        }
+        
         /* Mobile Optimizations */
         @media (max-width: 768px) {
             /* Larger text on mobile */
@@ -338,6 +352,6 @@
 
     </div>
 
-    <script src="app.js?v=5"></script>
+    <script src="app.js?v=6"></script>
 </body>
 </html>
