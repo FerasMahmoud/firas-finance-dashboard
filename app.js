@@ -555,7 +555,7 @@ function showReport(type) {
         
         let income = 0, expenses = 0;
         todayTransactions.forEach(t => {
-            const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+            const isIncome = t.transactionType === 'دخل';
             const isExpense = t.transactionType === 'صرف';
             
             if (isIncome) income += Math.abs(t.amount);
@@ -579,7 +579,7 @@ function showReport(type) {
         
         let income = 0, expenses = 0;
         weekTransactions.forEach(t => {
-            const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+            const isIncome = t.transactionType === 'دخل';
             const isExpense = t.transactionType === 'صرف';
             
             if (isIncome) income += Math.abs(t.amount);
