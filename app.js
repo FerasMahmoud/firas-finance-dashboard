@@ -5,6 +5,7 @@ let transactions = [];
 let balances = {};
 let filteredTransactions = [];
 let charts = {};
+let incomePeriod = 'month'; // daily, weekly, month
 
 // Bank name mappings
 const bankNames = {
@@ -183,15 +184,48 @@ function renderBalances() {
     document.getElementById('totalBalance').textContent = formatCurrency(total);
 }
 
+// Cycle income period (daily -> weekly -> monthly)
+function cycleIncomePeriod() {
+    const periods = ['daily', 'weekly', 'month'];
+    const labels = { daily: 'يومي', weekly: 'أسبوعي', month: 'شهري' };
+    
+    const currentIndex = periods.indexOf(incomePeriod);
+    const nextIndex = (currentIndex + 1) % periods.length;
+    incomePeriod = periods[nextIndex];
+    
+    // Update button text
+    const btn = document.getElementById('incomePeriodBtn');
+    if (btn) btn.textContent = labels[incomePeriod];
+    
+    // Re-render
+    renderIncomeExpenses();
+}
+
 // Render income vs expenses
 function renderIncomeExpenses() {
     let income = 0;
     let expenses = 0;
     
-    console.log('📊 renderIncomeExpenses: Processing', filteredTransactions.length, 'transactions');
+    console.log('📊 renderIncomeExpenses: Processing', filteredTransactions.length, 'transactions | Period:', incomePeriod);
     
-    filteredTransactions.forEach(t => {
-        // ✅ Use transactionType only (all amounts are positive in data)
+    // Filter by income period
+    const now = new Date();
+    const periodTransactions = filteredTransactions.filter(t => {
+        const date = new Date(t.timestamp);
+        
+        if (incomePeriod === 'daily') {
+            return date.toDateString() === now.toDateString();
+        } else if (incomePeriod === 'weekly') {
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            return date >= weekAgo;
+        } else if (incomePeriod === 'month') {
+            return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        }
+        return true;
+    });
+    
+    periodTransactions.forEach(t => {
+        // ✅ Use transaction_type only (all amounts are positive in data)
         const isExpense = t.transaction_type === 'صرف';
         const isIncome = t.transaction_type === 'دخل';
         
@@ -202,7 +236,7 @@ function renderIncomeExpenses() {
         }
     });
     
-    console.log('💰 Income:', income, 'SAR | Expenses:', expenses, 'SAR');
+    console.log('💰 Income:', income, 'SAR | Expenses:', expenses, 'SAR | Transactions:', periodTransactions.length);
     
     const total = Math.max(income, expenses);
     const incomePercent = total > 0 ? (income / total) * 100 : 0;
