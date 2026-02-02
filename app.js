@@ -184,19 +184,10 @@ function renderBalances() {
 
 // Render income vs expenses
 function renderIncomeExpenses() {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
-    
-    const monthlyTransactions = filteredTransactions.filter(t => {
-        const date = new Date(t.timestamp);
-        return date.getMonth() === currentMonth && date.getFullYear() === currentYear;
-    });
-    
     let income = 0;
     let expenses = 0;
     
-    monthlyTransactions.forEach(t => {
+    filteredTransactions.forEach(t => {
         // ✅ Use transactionType only (all amounts are positive in data)
         const isExpense = t.transactionType === 'صرف';
         const isIncome = t.transactionType === 'دخل';
