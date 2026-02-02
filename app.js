@@ -147,9 +147,13 @@ function renderIncomeExpenses() {
     let expenses = 0;
     
     monthlyTransactions.forEach(t => {
-        if (t.amount > 0) {
-            income += t.amount;
-        } else {
+        // Use transactionType if available, fallback to amount sign
+        const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+        const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+        
+        if (isIncome) {
+            income += Math.abs(t.amount);
+        } else if (isExpense) {
             expenses += Math.abs(t.amount);
         }
     });
@@ -173,30 +177,38 @@ function renderTransactionsList() {
         .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
         .slice(0, 10);
     
-    container.innerHTML = last10.map(t => `
+    container.innerHTML = last10.map(t => {
+        // Determine if income or expense based on transactionType
+        const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
+        const icon = isIncome ? '📥' : '📤';
+        const colorClass = isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
+        const sign = isIncome ? '+' : '-';
+        
+        return `
         <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
             <div class="flex-1">
                 <div class="flex items-center gap-3">
-                    <span class="text-2xl">${t.amount > 0 ? '📥' : '📤'}</span>
+                    <span class="text-2xl">${icon}</span>
                     <div>
                         <p class="font-semibold">${t.merchant}</p>
                         <p class="text-sm text-gray-600 dark:text-gray-400">
-                            ${bankNames[t.bank]} • ${t.category} • ${t.classification}
+                            ${bankNames[t.bank] || t.bank} • ${t.category} • ${t.classification}
                         </p>
                         ${t.note ? `<p class="text-xs text-gray-500 dark:text-gray-500">${t.note}</p>` : ''}
                     </div>
                 </div>
             </div>
             <div class="text-left mr-4">
-                <p class="font-bold ${t.amount > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}">
-                    ${t.amount > 0 ? '+' : ''}${formatCurrency(t.amount)}
+                <p class="font-bold ${colorClass}">
+                    ${sign}${formatCurrency(Math.abs(t.amount))}
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">
                     ${formatDate(t.timestamp)}
                 </p>
             </div>
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Render charts
@@ -209,7 +221,9 @@ function renderCharts() {
 function renderCategoryChart() {
     const categoryData = {};
     filteredTransactions.forEach(t => {
-        if (t.amount < 0 && t.category !== 'دخل') {
+        // Only show expenses in category chart (exclude income and transfers)
+        const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+        if (isExpense && t.category !== 'دخل') {
             categoryData[t.category] = (categoryData[t.category] || 0) + Math.abs(t.amount);
         }
     });
@@ -250,7 +264,9 @@ function renderCategoryChart() {
 function renderBankChart() {
     const bankData = {};
     filteredTransactions.forEach(t => {
-        if (t.amount < 0) {
+        // Only show expenses in bank chart
+        const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+        if (isExpense) {
             bankData[t.bank] = (bankData[t.bank] || 0) + Math.abs(t.amount);
         }
     });
@@ -298,7 +314,9 @@ function renderBankChart() {
 function renderClassificationChart() {
     const classData = {};
     filteredTransactions.forEach(t => {
-        if (t.amount < 0) {
+        // Only show expenses in classification chart
+        const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+        if (isExpense) {
             classData[t.classification] = (classData[t.classification] || 0) + Math.abs(t.amount);
         }
     });
