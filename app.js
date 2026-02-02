@@ -76,52 +76,31 @@ function showErrorNotification(message) {
     }, 5000);
 }
 
-// Load data from API
+// Load data from JSON files
 async function loadData() {
     try {
-        // ✅ Fetch from static JSON files on GitHub Pages
-        const [transactionsRes, banksRes] = await Promise.all([
+        const [transactionsRes, balancesRes] = await Promise.all([
             fetch('./data/transactions.json'),
-            fetch('./data/banks.json')
+            fetch('./data/balances.json')
         ]);
         
-        // ✅ CHECK HTTP STATUS
-        if (!transactionsRes.ok) {
-            throw new Error(`HTTP ${transactionsRes.status}: ${transactionsRes.statusText}`);
-        }
-        if (!banksRes.ok) {
-            throw new Error(`HTTP ${banksRes.status}: ${banksRes.statusText}`);
+        if (!transactionsRes.ok || !balancesRes.ok) {
+            throw new Error('Failed to load data files');
         }
         
-        // Parse responses
-        const transactionsData = await transactionsRes.json();
-        transactions = transactionsData.transactions || transactionsData; // Handle both formats
-        
-        const banksArray = await banksRes.json();
-        
-        // Convert banks array to balances object (for compatibility)
-        balances = {};
-        banksArray.forEach(bank => {
-            balances[bank.id] = {
-                balance: bank.balance,
-                lastUpdated: bank.last_updated,
-                account: bank.account,
-                currency: bank.currency
-            };
-        });
-        
+        transactions = await transactionsRes.json();
+        balances = await balancesRes.json();
         filteredTransactions = [...transactions];
         
-        console.log(`✅ Loaded ${transactions.length} transactions from static files`);
+        console.log(`✅ Loaded ${transactions.length} transactions`);
     } catch (error) {
         console.error('❌ Load Error:', error);
         
-        // Fallback to sample data if loading fails
+        // Fallback to sample data
         transactions = getSampleTransactions();
         balances = getSampleBalances();
         filteredTransactions = [...transactions];
         
-        // Show user-friendly error message
         showErrorNotification('تعذر تحميل البيانات. يتم عرض بيانات تجريبية.');
     }
 }
