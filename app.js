@@ -192,8 +192,8 @@ function renderIncomeExpenses() {
     
     filteredTransactions.forEach(t => {
         // ✅ Use transactionType only (all amounts are positive in data)
-        const isExpense = t.transactionType === 'صرف';
-        const isIncome = t.transactionType === 'دخل';
+        const isExpense = t.transaction_type === 'صرف';
+        const isIncome = t.transaction_type === 'دخل';
         
         if (isIncome) {
             income += Math.abs(t.amount);
@@ -225,7 +225,7 @@ function renderTransactionsList() {
     
     container.innerHTML = last10.map(t => {
         // ✅ Determine if income or expense based on transactionType only
-        const isIncome = t.transactionType === 'دخل';
+        const isIncome = t.transaction_type === 'دخل';
         const icon = isIncome ? '📥' : '📤';
         const colorClass = isIncome ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400';
         const sign = isIncome ? '+' : '-';
@@ -268,7 +268,7 @@ function renderCategoryChart() {
     const categoryData = {};
     filteredTransactions.forEach(t => {
         // Only show expenses in category chart (exclude income and transfers)
-        const isExpense = t.transactionType === 'صرف';
+        const isExpense = t.transaction_type === 'صرف';
         if (isExpense && t.category !== 'دخل') {
             categoryData[t.category] = (categoryData[t.category] || 0) + Math.abs(t.amount);
         }
@@ -329,7 +329,7 @@ function renderBankChart() {
     const bankData = {};
     filteredTransactions.forEach(t => {
         // Only show expenses in bank chart
-        const isExpense = t.transactionType === 'صرف';
+        const isExpense = t.transaction_type === 'صرف';
         if (isExpense) {
             bankData[t.bank] = (bankData[t.bank] || 0) + Math.abs(t.amount);
         }
@@ -410,7 +410,7 @@ function renderClassificationChart() {
     const classData = {};
     filteredTransactions.forEach(t => {
         // Only show expenses in classification chart
-        const isExpense = t.transactionType === 'صرف';
+        const isExpense = t.transaction_type === 'صرف';
         if (isExpense) {
             classData[t.classification] = (classData[t.classification] || 0) + Math.abs(t.amount);
         }
@@ -552,8 +552,8 @@ function showReport(type) {
         
         let income = 0, expenses = 0;
         todayTransactions.forEach(t => {
-            const isIncome = t.transactionType === 'دخل';
-            const isExpense = t.transactionType === 'صرف';
+            const isIncome = t.transaction_type === 'دخل';
+            const isExpense = t.transaction_type === 'صرف';
             
             if (isIncome) income += Math.abs(t.amount);
             else if (isExpense) expenses += Math.abs(t.amount);
@@ -576,8 +576,8 @@ function showReport(type) {
         
         let income = 0, expenses = 0;
         weekTransactions.forEach(t => {
-            const isIncome = t.transactionType === 'دخل';
-            const isExpense = t.transactionType === 'صرف';
+            const isIncome = t.transaction_type === 'دخل';
+            const isExpense = t.transaction_type === 'صرف';
             
             if (isIncome) income += Math.abs(t.amount);
             else if (isExpense) expenses += Math.abs(t.amount);
@@ -603,8 +603,8 @@ function showReport(type) {
         const categoryBreakdown = {};
         
         monthTransactions.forEach(t => {
-            const isIncome = t.transactionType === 'دخل';
-            const isExpense = t.transactionType === 'صرف';
+            const isIncome = t.transaction_type === 'دخل';
+            const isExpense = t.transaction_type === 'صرف';
             
             if (isIncome) {
                 income += Math.abs(t.amount);
@@ -651,8 +651,8 @@ function showReport(type) {
         const calcStats = (trans) => {
             let income = 0, expenses = 0;
             trans.forEach(t => {
-                const isIncome = t.transactionType === 'دخل';
-                const isExpense = t.transactionType === 'صرف';
+                const isIncome = t.transaction_type === 'دخل';
+                const isExpense = t.transaction_type === 'صرف';
                 
                 if (isIncome) income += Math.abs(t.amount);
                 else if (isExpense) expenses += Math.abs(t.amount);
