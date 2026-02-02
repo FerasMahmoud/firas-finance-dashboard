@@ -9,6 +9,7 @@ let incomePeriod = 'month'; // daily, weekly, month
 let chartType = 'doughnut'; // doughnut, bar, pie, line
 let currentPeriod = 'all'; // Track main period filter
 let bnplPayments = { tamara: [], tabby: [] };
+let chartsPeriod = 'all'; // daily, weekly, month, all - for charts only
 
 // Bank name mappings
 const bankNames = {
@@ -450,9 +451,52 @@ function cycleChartType() {
     renderCharts();
 }
 
+// Cycle charts period
+function cycleChartsPeriod() {
+    const periods = ['daily', 'weekly', 'month', 'all'];
+    const labels = { daily: '📅 يومي', weekly: '📅 أسبوعي', month: '📅 شهري', all: '📅 كامل' };
+    
+    const currentIndex = periods.indexOf(chartsPeriod);
+    const nextIndex = (currentIndex + 1) % periods.length;
+    chartsPeriod = periods[nextIndex];
+    
+    console.log('📅 Charts period changed to:', chartsPeriod);
+    
+    // Update button text
+    const btn = document.getElementById('chartsPeriodBtn');
+    if (btn) btn.textContent = labels[chartsPeriod];
+    
+    // Re-render charts
+    renderCharts();
+}
+
+// Get filtered transactions by period
+function getChartTransactions() {
+    if (chartsPeriod === 'all') {
+        return filteredTransactions;
+    }
+    
+    const now = new Date();
+    return filteredTransactions.filter(t => {
+        const date = new Date(t.timestamp);
+        
+        if (chartsPeriod === 'daily') {
+            return date.toDateString() === now.toDateString();
+        } else if (chartsPeriod === 'weekly') {
+            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            return date >= weekAgo;
+        } else if (chartsPeriod === 'month') {
+            return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+        }
+        return true;
+    });
+}
+
 function renderCategoryChart() {
     const categoryData = {};
-    filteredTransactions.forEach(t => {
+    const chartTransactions = getChartTransactions();
+    
+    chartTransactions.forEach(t => {
         // Only show expenses in category chart (exclude income and transfers)
         const isExpense = t.transaction_type === 'صرف';
         if (isExpense && t.category !== 'دخل') {
@@ -522,7 +566,9 @@ function renderCategoryChart() {
 
 function renderBankChart() {
     const bankData = {};
-    filteredTransactions.forEach(t => {
+    const chartTransactions = getChartTransactions();
+    
+    chartTransactions.forEach(t => {
         // Only show expenses in bank chart
         const isExpense = t.transaction_type === 'صرف';
         if (isExpense) {
@@ -603,7 +649,9 @@ function generateColors(count) {
 
 function renderClassificationChart() {
     const classData = {};
-    filteredTransactions.forEach(t => {
+    const chartTransactions = getChartTransactions();
+    
+    chartTransactions.forEach(t => {
         // Only show expenses in classification chart
         const isExpense = t.transaction_type === 'صرف';
         if (isExpense) {
