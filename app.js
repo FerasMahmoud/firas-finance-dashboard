@@ -6,6 +6,8 @@ let balances = {};
 let filteredTransactions = [];
 let charts = {};
 let incomePeriod = 'month'; // daily, weekly, month
+let chartType = 'doughnut'; // doughnut, bar, pie, line
+let currentPeriod = 'all'; // Track main period filter
 
 // Bank name mappings
 const bankNames = {
@@ -345,6 +347,25 @@ function renderCharts() {
     renderClassificationChart();
 }
 
+// Cycle chart type
+function cycleChartType() {
+    const types = ['doughnut', 'pie', 'bar', 'line'];
+    const labels = { doughnut: '🍩 حلقة', pie: '🥧 دائري', bar: '📊 أعمدة', line: '📈 خطي' };
+    
+    const currentIndex = types.indexOf(chartType);
+    const nextIndex = (currentIndex + 1) % types.length;
+    chartType = types[nextIndex];
+    
+    console.log('📊 Chart type changed to:', chartType);
+    
+    // Update button text
+    const btn = document.getElementById('chartTypeBtn');
+    if (btn) btn.textContent = labels[chartType];
+    
+    // Re-render charts
+    renderCharts();
+}
+
 function renderCategoryChart() {
     const categoryData = {};
     filteredTransactions.forEach(t => {
@@ -375,7 +396,7 @@ function renderCategoryChart() {
     const isMobile = window.innerWidth < 768;
     
     charts.category = new Chart(ctx, {
-        type: 'doughnut',
+        type: chartType,
         data: {
             labels: Object.keys(categoryData),
             datasets: [{
@@ -389,19 +410,28 @@ function renderCategoryChart() {
             responsive: true,
             maintainAspectRatio: isMobile ? false : true,
             aspectRatio: isMobile ? 1 : 2,
+            indexAxis: chartType === 'bar' ? 'y' : undefined,
             plugins: {
                 legend: {
                     rtl: true,
                     position: 'bottom',
+                    align: 'start',
                     labels: {
                         textAlign: 'right',
+                        padding: 15,
+                        boxWidth: 12,
                         color: isDark ? '#9CA3AF' : '#4B5563',
                         font: {
-                            family: 'Cairo, Tajawal, -apple-system, Arial, sans-serif'
+                            family: 'Cairo, Tajawal, -apple-system, Arial, sans-serif',
+                            size: isMobile ? 11 : 13
                         }
                     }
                 }
-            }
+            },
+            scales: chartType === 'bar' || chartType === 'line' ? {
+                x: { ticks: { color: isDark ? '#9CA3AF' : '#4B5563' } },
+                y: { ticks: { color: isDark ? '#9CA3AF' : '#4B5563' } }
+            } : undefined
         }
     });
 }
@@ -556,6 +586,8 @@ function initFilters() {
 
 // Set period using buttons
 function setPeriod(period) {
+    currentPeriod = period; // Save global period
+    
     // Update hidden select for compatibility
     const periodSelect = document.getElementById('filterPeriod');
     if (periodSelect) {
