@@ -93,6 +93,7 @@ async function loadData() {
         filteredTransactions = [...transactions];
         
         console.log(`✅ Loaded ${transactions.length} transactions`);
+        console.log(`📂 Sample transaction:`, transactions[0]);
     } catch (error) {
         console.error('❌ Load Error:', error);
         
@@ -187,6 +188,8 @@ function renderIncomeExpenses() {
     let income = 0;
     let expenses = 0;
     
+    console.log('📊 renderIncomeExpenses: Processing', filteredTransactions.length, 'transactions');
+    
     filteredTransactions.forEach(t => {
         // ✅ Use transactionType only (all amounts are positive in data)
         const isExpense = t.transactionType === 'صرف';
@@ -198,6 +201,8 @@ function renderIncomeExpenses() {
             expenses += Math.abs(t.amount);
         }
     });
+    
+    console.log('💰 Income:', income, 'SAR | Expenses:', expenses, 'SAR');
     
     const total = Math.max(income, expenses);
     const incomePercent = total > 0 ? (income / total) * 100 : 0;
