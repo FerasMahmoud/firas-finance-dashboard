@@ -5,11 +5,9 @@ let transactions = [];
 let balances = {};
 let filteredTransactions = [];
 let charts = {};
-let incomePeriod = 'month'; // daily, weekly, month
 let chartType = 'doughnut'; // doughnut, bar, pie, line
 let currentPeriod = 'all'; // Track main period filter
 let bnplPayments = { tamara: [], tabby: [] };
-let chartsPeriod = 'all'; // daily, weekly, month, all - for charts only
 
 // Bank name mappings
 const bankNames = {
@@ -272,46 +270,15 @@ function renderBalances() {
 }
 
 // Cycle income period (daily -> weekly -> monthly)
-function cycleIncomePeriod() {
-    const periods = ['daily', 'weekly', 'month'];
-    const labels = { daily: '📅 يومي', weekly: '📅 أسبوعي', month: '📅 شهري' };
-    
-    const currentIndex = periods.indexOf(incomePeriod);
-    const nextIndex = (currentIndex + 1) % periods.length;
-    incomePeriod = periods[nextIndex];
-    
-    console.log('🔄 Period changed to:', incomePeriod);
-    
-    // Update button text
-    const btn = document.getElementById('incomePeriodBtn');
-    if (btn) btn.textContent = labels[incomePeriod];
-    
-    // Re-render
-    renderIncomeExpenses();
-}
-
 // Render income vs expenses
 function renderIncomeExpenses() {
     let income = 0;
     let expenses = 0;
     
-    console.log('📊 renderIncomeExpenses: Processing', filteredTransactions.length, 'transactions | Period:', incomePeriod);
+    console.log('📊 renderIncomeExpenses: Processing', filteredTransactions.length, 'transactions | Period:', currentPeriod);
     
-    // Filter by income period
-    const now = new Date();
-    const periodTransactions = filteredTransactions.filter(t => {
-        const date = new Date(t.timestamp);
-        
-        if (incomePeriod === 'daily') {
-            return date.toDateString() === now.toDateString();
-        } else if (incomePeriod === 'weekly') {
-            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            return date >= weekAgo;
-        } else if (incomePeriod === 'month') {
-            return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-        }
-        return true;
-    });
+    // Use filteredTransactions directly (already filtered by currentPeriod in applyFilters)
+    const periodTransactions = filteredTransactions;
     
     periodTransactions.forEach(t => {
         // ✅ Use transaction_type only (all amounts are positive in data)
@@ -452,44 +419,10 @@ function cycleChartType() {
 }
 
 // Cycle charts period
-function cycleChartsPeriod() {
-    const periods = ['daily', 'weekly', 'month', 'all'];
-    const labels = { daily: '📅 يومي', weekly: '📅 أسبوعي', month: '📅 شهري', all: '📅 كامل' };
-    
-    const currentIndex = periods.indexOf(chartsPeriod);
-    const nextIndex = (currentIndex + 1) % periods.length;
-    chartsPeriod = periods[nextIndex];
-    
-    console.log('📅 Charts period changed to:', chartsPeriod);
-    
-    // Update button text
-    const btn = document.getElementById('chartsPeriodBtn');
-    if (btn) btn.textContent = labels[chartsPeriod];
-    
-    // Re-render charts
-    renderCharts();
-}
-
 // Get filtered transactions by period
 function getChartTransactions() {
-    if (chartsPeriod === 'all') {
-        return filteredTransactions;
-    }
-    
-    const now = new Date();
-    return filteredTransactions.filter(t => {
-        const date = new Date(t.timestamp);
-        
-        if (chartsPeriod === 'daily') {
-            return date.toDateString() === now.toDateString();
-        } else if (chartsPeriod === 'weekly') {
-            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            return date >= weekAgo;
-        } else if (chartsPeriod === 'month') {
-            return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
-        }
-        return true;
-    });
+    // Use filteredTransactions directly (already filtered by currentPeriod)
+    return filteredTransactions;
 }
 
 function renderCategoryChart() {
