@@ -10,7 +10,29 @@ const bankNames = {
     'alrajhi': 'الراجحي',
     'barq': 'برق',
     'tikmo': 'تيكمو',
-    'stc': 'STC Bank'
+    'stc': 'STC Bank',
+    // Support Arabic names directly
+    'السعودي الفرنسي': 'السعودي الفرنسي',
+    'الراجحي': 'الراجحي',
+    'STC Bank': 'STC Bank',
+    'Unknown': 'غير محدد',
+    'ATC': 'ATC'
+};
+
+// Reverse mapping for balance element IDs
+const bankIdMap = {
+    'السعودي الفرنسي': 'banque-saudi',
+    'الراجحي': 'alrajhi',
+    'برق': 'barq',
+    'تيكمو': 'tikmo',
+    'STC Bank': 'stc',
+    'banque-saudi': 'banque-saudi',
+    'alrajhi': 'alrajhi',
+    'barq': 'barq',
+    'tikmo': 'tikmo',
+    'stc': 'stc',
+    'Unknown': 'unknown',
+    'ATC': 'atc'
 };
 
 // Load data on page load
@@ -106,27 +128,13 @@ function renderBalances() {
         const amount = typeof data === 'number' ? data : (data.balance || 0);
         total += amount;
         
-        // Try to find element by bank name (both Arabic and English IDs)
-        const bankKey = bank.toLowerCase().replace(/\s+/g, '-');
-        let el = document.getElementById(`balance-${bankKey}`);
-        
-        // Fallback: try mapping Arabic names to English IDs
-        if (!el) {
-            const reverseMap = {
-                'السعودي الفرنسي': 'banque-saudi',
-                'الراجحي': 'alrajhi',
-                'برق': 'barq',
-                'تيكمو': 'tikmo',
-                'STC Bank': 'stc'
-            };
-            const mappedKey = reverseMap[bank];
-            if (mappedKey) {
-                el = document.getElementById(`balance-${mappedKey}`);
+        // Use bankIdMap to get element ID
+        const bankId = bankIdMap[bank];
+        if (bankId) {
+            const el = document.getElementById(`balance-${bankId}`);
+            if (el) {
+                el.textContent = formatCurrency(amount);
             }
-        }
-        
-        if (el) {
-            el.textContent = formatCurrency(amount);
         }
     });
     document.getElementById('totalBalance').textContent = formatCurrency(total);
@@ -192,7 +200,7 @@ function renderTransactionsList() {
                     <div>
                         <p class="font-semibold">${t.merchant}</p>
                         <p class="text-sm text-gray-600 dark:text-gray-400">
-                            ${bankNames[t.bank] || t.bank} • ${t.category} • ${t.classification}
+                            ${bankNames[t.bank] || t.bank} • ${t.category || 'غير محدد'} • ${t.classification || 'غير محدد'}
                         </p>
                         ${t.note ? `<p class="text-xs text-gray-500 dark:text-gray-500">${t.note}</p>` : ''}
                     </div>
@@ -231,6 +239,8 @@ function renderCategoryChart() {
     const ctx = document.getElementById('categoryChart');
     if (charts.category) charts.category.destroy();
     
+    const isDark = document.documentElement.classList.contains('dark');
+    
     charts.category = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -249,8 +259,7 @@ function renderCategoryChart() {
                 legend: {
                     position: 'bottom',
                     labels: {
-                        color: getComputedStyle(document.documentElement).getPropertyValue('--tw-text-opacity') 
-                            ? '#fff' : '#000',
+                        color: isDark ? '#9CA3AF' : '#4B5563',
                         font: {
                             family: '-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Arial, sans-serif'
                         }
@@ -277,7 +286,7 @@ function renderBankChart() {
     charts.bank = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: Object.keys(bankData).map(b => bankNames[b]),
+            labels: Object.keys(bankData).map(b => bankNames[b] || b),
             datasets: [{
                 label: 'المصروفات',
                 data: Object.values(bankData),
