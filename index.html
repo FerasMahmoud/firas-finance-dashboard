@@ -27,18 +27,57 @@
             direction: rtl;
         }
         
-        /* Mobile Touch Targets - Minimum 44px */
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            /* Larger text on mobile */
+            body {
+                font-size: 16px;
+            }
+            
+            /* Bigger touch targets */
+            .period-btn {
+                min-height: 48px !important;
+                padding: 14px 20px !important;
+                font-size: 15px !important;
+            }
+            
+            /* Better spacing */
+            .container {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+            
+            /* Balance cards - stack nicely */
+            .balance-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+            
+            /* Charts full width */
+            canvas {
+                max-height: 250px !important;
+            }
+            
+            /* Hide advanced filters on mobile initially */
+            .advanced-filters {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+            .advanced-filters.show {
+                max-height: 500px;
+            }
+        }
+        
+        /* Touch Targets - Minimum 44px */
         .btn, button, select {
             min-height: 44px;
             min-width: 44px;
             padding: 12px 16px;
-        }
-        
-        /* Ensure report buttons are touch-friendly */
-        button {
             touch-action: manipulation;
         }
         
+        /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -64,55 +103,55 @@
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
     
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-md">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold">💰 لوحة التحكم المالية</h1>
-            <button id="themeToggle" class="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                <span class="dark:hidden">🌙</span>
-                <span class="hidden dark:inline">☀️</span>
+    <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-3 md:px-4 py-3 md:py-4 flex justify-between items-center">
+            <h1 class="text-xl md:text-2xl font-bold">💰 لوحة التحكم</h1>
+            <button id="themeToggle" class="p-2 md:p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition min-w-[44px] min-h-[44px]">
+                <span class="dark:hidden text-lg">🌙</span>
+                <span class="hidden dark:inline text-lg">☀️</span>
             </button>
         </div>
     </header>
 
-    <div class="container mx-auto px-4 py-6">
+    <div class="container mx-auto px-3 md:px-4 py-4 md:py-6">
         
         <!-- Balance Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            <div class="md:col-span-3 lg:col-span-6 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 rounded-lg shadow-lg p-6 text-white">
-                <h2 class="text-lg opacity-90">الرصيد الإجمالي</h2>
-                <p id="totalBalance" class="text-4xl font-bold mt-2">0 ر.س</p>
+        <div class="balance-grid grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-6">
+            <div class="col-span-2 md:col-span-3 lg:col-span-6 bg-gradient-to-r from-blue-500 to-purple-600 dark:from-blue-700 dark:to-purple-800 rounded-lg shadow-lg p-5 md:p-6 text-white">
+                <h2 class="text-base md:text-lg opacity-90">الرصيد الإجمالي</h2>
+                <p id="totalBalance" class="text-3xl md:text-4xl font-bold mt-2">0 ر.س</p>
             </div>
             
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h3 class="text-sm text-gray-600 dark:text-gray-400">السعودي الفرنسي</h3>
-                <p id="balance-banque-saudi" class="text-xl font-bold mt-1">0 ر.س</p>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-3 md:p-4">
+                <h3 class="text-xs md:text-sm text-gray-600 dark:text-gray-400">السعودي الفرنسي</h3>
+                <p id="balance-banque-saudi" class="text-lg md:text-xl font-bold mt-1">0 ر.س</p>
             </div>
             
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h3 class="text-sm text-gray-600 dark:text-gray-400">الراجحي</h3>
-                <p id="balance-alrajhi" class="text-xl font-bold mt-1">0 ر.س</p>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-3 md:p-4">
+                <h3 class="text-xs md:text-sm text-gray-600 dark:text-gray-400">الراجحي</h3>
+                <p id="balance-alrajhi" class="text-lg md:text-xl font-bold mt-1">0 ر.س</p>
             </div>
             
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h3 class="text-sm text-gray-600 dark:text-gray-400">برق</h3>
-                <p id="balance-barq" class="text-xl font-bold mt-1">0 ر.س</p>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-3 md:p-4">
+                <h3 class="text-xs md:text-sm text-gray-600 dark:text-gray-400">برق</h3>
+                <p id="balance-barq" class="text-lg md:text-xl font-bold mt-1">0 ر.س</p>
             </div>
             
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h3 class="text-sm text-gray-600 dark:text-gray-400">تيكمو</h3>
-                <p id="balance-tikmo" class="text-xl font-bold mt-1">0 ر.س</p>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-3 md:p-4">
+                <h3 class="text-xs md:text-sm text-gray-600 dark:text-gray-400">تيكمو</h3>
+                <p id="balance-tikmo" class="text-lg md:text-xl font-bold mt-1">0 ر.س</p>
             </div>
             
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                <h3 class="text-sm text-gray-600 dark:text-gray-400">STC Bank</h3>
-                <p id="balance-stc" class="text-xl font-bold mt-1">0 ر.س</p>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-3 md:p-4">
+                <h3 class="text-xs md:text-sm text-gray-600 dark:text-gray-400">STC Bank</h3>
+                <p id="balance-stc" class="text-lg md:text-xl font-bold mt-1">0 ر.س</p>
             </div>
         </div>
 
         <!-- Income vs Expenses -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold mb-2">الدخل والمصروفات (الفترة المحددة)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6">
+                <h3 class="text-base md:text-lg font-semibold mb-3">الدخل والمصروفات</h3>
                 <div class="space-y-3">
                     <div>
                         <div class="flex justify-between items-center mb-1">
@@ -141,27 +180,31 @@
                 </div>
             </div>
 
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold mb-4">توزيع المصروفات حسب الفئة</h3>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6">
+                <h3 class="text-base md:text-lg font-semibold mb-3 md:mb-4">توزيع المصروفات</h3>
                 <canvas id="categoryChart"></canvas>
             </div>
         </div>
 
         <!-- Period Filter Buttons -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-3 md:p-4 mb-6">
             <div class="flex flex-wrap gap-2 justify-center">
-                <button onclick="setPeriod('all')" id="btn-all" class="period-btn px-6 py-2 rounded-lg font-medium transition bg-blue-500 text-white hover:bg-blue-600">الكل</button>
-                <button onclick="setPeriod('today')" id="btn-today" class="period-btn px-6 py-2 rounded-lg font-medium transition bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">اليوم</button>
-                <button onclick="setPeriod('week')" id="btn-week" class="period-btn px-6 py-2 rounded-lg font-medium transition bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">هذا الأسبوع</button>
-                <button onclick="setPeriod('month')" id="btn-month" class="period-btn px-6 py-2 rounded-lg font-medium transition bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">هذا الشهر</button>
-                <button onclick="setPeriod('year')" id="btn-year" class="period-btn px-6 py-2 rounded-lg font-medium transition bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600">هذه السنة</button>
+                <button onclick="setPeriod('all')" id="btn-all" class="period-btn flex-1 min-w-[80px] px-4 md:px-6 py-3 md:py-2 rounded-lg font-medium text-sm md:text-base transition bg-blue-500 text-white hover:bg-blue-600 active:bg-blue-700">الكل</button>
+                <button onclick="setPeriod('today')" id="btn-today" class="period-btn flex-1 min-w-[80px] px-4 md:px-6 py-3 md:py-2 rounded-lg font-medium text-sm md:text-base transition bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 active:bg-gray-400">اليوم</button>
+                <button onclick="setPeriod('week')" id="btn-week" class="period-btn flex-1 min-w-[80px] px-4 md:px-6 py-3 md:py-2 rounded-lg font-medium text-sm md:text-base transition bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 active:bg-gray-400">الأسبوع</button>
+                <button onclick="setPeriod('month')" id="btn-month" class="period-btn flex-1 min-w-[80px] px-4 md:px-6 py-3 md:py-2 rounded-lg font-medium text-sm md:text-base transition bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 active:bg-gray-400">الشهر</button>
+                <button onclick="setPeriod('year')" id="btn-year" class="period-btn flex-1 min-w-[80px] px-4 md:px-6 py-3 md:py-2 rounded-lg font-medium text-sm md:text-base transition bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 active:bg-gray-400">السنة</button>
             </div>
         </div>
 
         <!-- Filters -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 mb-6">
-            <h3 class="text-lg font-semibold mb-4">التصفية</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <button onclick="document.getElementById('advancedFilters').classList.toggle('show')" class="md:hidden w-full text-right font-semibold mb-3 flex items-center justify-between">
+                <span>تصفية متقدمة</span>
+                <span>▼</span>
+            </button>
+            <h3 class="hidden md:block text-lg font-semibold mb-4">التصفية</h3>
+            <div id="advancedFilters" class="advanced-filters md:!max-h-none grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-sm font-medium mb-2">البنك</label>
                     <select id="filterBank" class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600">
@@ -211,20 +254,20 @@
         </div>
 
         <!-- Reports -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6 mb-6">
             <h3 class="text-lg font-semibold mb-4">التقارير</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <button onclick="showReport('daily')" class="p-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">
-                    ملخص يومي
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+                <button onclick="showReport('daily')" class="p-3 md:p-4 bg-blue-500 hover:bg-blue-600 active:bg-blue-700 text-white rounded-lg transition text-sm md:text-base font-medium">
+                    يومي
                 </button>
-                <button onclick="showReport('weekly')" class="p-3 bg-green-500 hover:bg-green-600 text-white rounded-lg transition">
-                    ملخص أسبوعي
+                <button onclick="showReport('weekly')" class="p-3 md:p-4 bg-green-500 hover:bg-green-600 active:bg-green-700 text-white rounded-lg transition text-sm md:text-base font-medium">
+                    أسبوعي
                 </button>
-                <button onclick="showReport('monthly')" class="p-3 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition">
-                    ملخص شهري
+                <button onclick="showReport('monthly')" class="p-3 md:p-4 bg-purple-500 hover:bg-purple-600 active:bg-purple-700 text-white rounded-lg transition text-sm md:text-base font-medium">
+                    شهري
                 </button>
-                <button onclick="showReport('comparison')" class="p-3 bg-orange-500 hover:bg-orange-600 text-white rounded-lg transition">
-                    مقارنة شهرية
+                <button onclick="showReport('comparison')" class="p-3 md:p-4 bg-orange-500 hover:bg-orange-600 active:bg-orange-700 text-white rounded-lg transition text-sm md:text-base font-medium">
+                    مقارنة
                 </button>
             </div>
             <div id="reportContent" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -242,23 +285,23 @@
         </div>
 
         <!-- Charts -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold mb-4">المصروفات حسب البنك</h3>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-6 mb-6">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6">
+                <h3 class="text-base md:text-lg font-semibold mb-3 md:mb-4">المصروفات حسب البنك</h3>
                 <canvas id="bankChart"></canvas>
             </div>
             
-            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-                <h3 class="text-lg font-semibold mb-4">المصروفات حسب التصنيف</h3>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6">
+                <h3 class="text-base md:text-lg font-semibold mb-3 md:mb-4">المصروفات حسب التصنيف</h3>
                 <canvas id="classificationChart"></canvas>
             </div>
         </div>
 
         <!-- Last 10 Transactions -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h3 class="text-lg font-semibold mb-4">آخر 10 معاملات</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 md:p-6">
+            <h3 class="text-base md:text-lg font-semibold mb-4">آخر 10 معاملات</h3>
             <div class="overflow-x-auto">
-                <div id="transactionsList" class="space-y-2">
+                <div id="transactionsList" class="space-y-2 md:space-y-3">
                     <!-- Transactions will be loaded here -->
                 </div>
             </div>
