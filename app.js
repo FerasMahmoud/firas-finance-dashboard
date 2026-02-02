@@ -187,11 +187,13 @@ function renderBalances() {
 // Cycle income period (daily -> weekly -> monthly)
 function cycleIncomePeriod() {
     const periods = ['daily', 'weekly', 'month'];
-    const labels = { daily: 'يومي', weekly: 'أسبوعي', month: 'شهري' };
+    const labels = { daily: '📅 يومي', weekly: '📅 أسبوعي', month: '📅 شهري' };
     
     const currentIndex = periods.indexOf(incomePeriod);
     const nextIndex = (currentIndex + 1) % periods.length;
     incomePeriod = periods[nextIndex];
+    
+    console.log('🔄 Period changed to:', incomePeriod);
     
     // Update button text
     const btn = document.getElementById('incomePeriodBtn');
