@@ -271,7 +271,7 @@ function renderCategoryChart() {
     const categoryData = {};
     filteredTransactions.forEach(t => {
         // Only show expenses in category chart (exclude income and transfers)
-        const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+        const isExpense = t.transactionType === 'صرف';
         if (isExpense && t.category !== 'دخل') {
             categoryData[t.category] = (categoryData[t.category] || 0) + Math.abs(t.amount);
         }
@@ -294,6 +294,7 @@ function renderCategoryChart() {
     }
     
     const isDark = document.documentElement.classList.contains('dark');
+    const isMobile = window.innerWidth < 768;
     
     charts.category = new Chart(ctx, {
         type: 'doughnut',
@@ -308,7 +309,8 @@ function renderCategoryChart() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: isMobile ? false : true,
+            aspectRatio: isMobile ? 1 : 2,
             plugins: {
                 legend: {
                     rtl: true,
@@ -330,7 +332,7 @@ function renderBankChart() {
     const bankData = {};
     filteredTransactions.forEach(t => {
         // Only show expenses in bank chart
-        const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+        const isExpense = t.transactionType === 'صرف';
         if (isExpense) {
             bankData[t.bank] = (bankData[t.bank] || 0) + Math.abs(t.amount);
         }
@@ -353,6 +355,7 @@ function renderBankChart() {
     }
     
     const isDark = document.documentElement.classList.contains('dark');
+    const isMobile = window.innerWidth < 768;
     
     charts.bank = new Chart(ctx, {
         type: 'bar',
@@ -366,7 +369,8 @@ function renderBankChart() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: isMobile ? false : true,
+            aspectRatio: isMobile ? 1 : 2,
             scales: {
                 y: {
                     beginAtZero: true,
@@ -409,7 +413,7 @@ function renderClassificationChart() {
     const classData = {};
     filteredTransactions.forEach(t => {
         // Only show expenses in classification chart
-        const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+        const isExpense = t.transactionType === 'صرف';
         if (isExpense) {
             classData[t.classification] = (classData[t.classification] || 0) + Math.abs(t.amount);
         }
@@ -432,6 +436,7 @@ function renderClassificationChart() {
     }
     
     const isDark = document.documentElement.classList.contains('dark');
+    const isMobile = window.innerWidth < 768;
     const dataCount = Object.keys(classData).length;
     
     charts.classification = new Chart(ctx, {
@@ -445,7 +450,8 @@ function renderClassificationChart() {
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true,
+            maintainAspectRatio: isMobile ? false : true,
+            aspectRatio: isMobile ? 1 : 2,
             plugins: {
                 legend: {
                     rtl: true,
@@ -550,7 +556,7 @@ function showReport(type) {
         let income = 0, expenses = 0;
         todayTransactions.forEach(t => {
             const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
-            const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+            const isExpense = t.transactionType === 'صرف';
             
             if (isIncome) income += Math.abs(t.amount);
             else if (isExpense) expenses += Math.abs(t.amount);
@@ -574,7 +580,7 @@ function showReport(type) {
         let income = 0, expenses = 0;
         weekTransactions.forEach(t => {
             const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
-            const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+            const isExpense = t.transactionType === 'صرف';
             
             if (isIncome) income += Math.abs(t.amount);
             else if (isExpense) expenses += Math.abs(t.amount);
@@ -601,7 +607,7 @@ function showReport(type) {
         
         monthTransactions.forEach(t => {
             const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
-            const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+            const isExpense = t.transactionType === 'صرف';
             
             if (isIncome) {
                 income += Math.abs(t.amount);
@@ -649,7 +655,7 @@ function showReport(type) {
             let income = 0, expenses = 0;
             trans.forEach(t => {
                 const isIncome = t.transactionType === 'دخل' || (t.amount > 0 && t.transactionType !== 'صرف' && t.transactionType !== 'تحويلات');
-                const isExpense = t.transactionType === 'صرف' || (t.amount < 0 && !t.transactionType);
+                const isExpense = t.transactionType === 'صرف';
                 
                 if (isIncome) income += Math.abs(t.amount);
                 else if (isExpense) expenses += Math.abs(t.amount);
@@ -702,6 +708,7 @@ function initThemeToggle() {
     toggle.addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
         const isDark = document.documentElement.classList.contains('dark');
+    const isMobile = window.innerWidth < 768;
         localStorage.setItem('theme', isDark ? 'dark' : 'light');
         
         // Refresh charts with new colors
